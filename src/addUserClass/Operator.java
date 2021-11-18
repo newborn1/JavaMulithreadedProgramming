@@ -9,7 +9,8 @@ public class Operator extends User{
 						  		  "\t\t\t1、显示文件列表\n",
 						  		  "\t\t\t2、下载文件\n",
 						  		  "\t\t\t3、上传文件\n",
-						  		  "\t\t\t4、退出\n",
+						  		  "\t\t\t4、修改密码\n",
+						  		  "\t\t\t5、退出\n",
 						  		  "*******************************************************\n"
 		};
 		StringBuilder surfaceBuilder = new StringBuilder();

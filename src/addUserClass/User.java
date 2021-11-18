@@ -13,6 +13,10 @@ public abstract class User {
 		this.role=role;				
 	}
 	
+	public String toString(){
+		return name+" "+password+" "+role;
+	}
+	
 	public boolean changeSelfInfo(String password){
 		//写用户信息到存储
 		if (DataProcessing.update(name, password, role)){
@@ -53,6 +57,7 @@ public abstract class User {
 
 	public void setPassword(String password) {
 		this.password = password;
+		System.out.println("修改密码。");
 	}
 
 	public String getRole() {

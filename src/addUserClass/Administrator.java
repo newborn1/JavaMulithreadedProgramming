@@ -1,6 +1,7 @@
 package addUserClass;
 
 import java.util.*;
+import dataProcessing.*;
 
 public class Administrator extends User {
 	public Administrator(String name,String password,String role) {
@@ -29,17 +30,38 @@ public class Administrator extends User {
 	}
 	
 	public boolean changeUserInfo() {
+		System.out.println("修改成功!");
 		return true;
 	}
 	
 	public boolean delUser() {
+		System.out.print("请输入将删除的用户名：");
+		String name = null;
+		Scanner sc = new Scanner(System.in);
+		name = sc.next();
+		DataProcessing.delete(name);
 		return true;
 	}
 	
 	public boolean addUser() {
+		Scanner sc = new Scanner(System.in);
+		System.out.print("请输入名字：");
+		String name = null;
+		name = sc.next();
+		System.out.print("请输入密码：");
+		String password = null;
+		password = sc.next();
+		System.out.print("请输入角色：");
+		String role = null;
+		role = sc.next();
+		DataProcessing.insert(name,password,role);
 		return true;
 	}
 	public boolean listUser() {
+		Enumeration<User> e = DataProcessing.getAllUser();
+		while(e.hasMoreElements()) {
+			System.out.println(e.nextElement());
+		}
 		return true;
 	}
 
