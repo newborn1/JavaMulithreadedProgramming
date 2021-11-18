@@ -42,22 +42,23 @@ public class Main {
 		
 		System.out.print("请输入用户名:");
 		name = in.next();
-		if(DataProcessing.searchUser(name) == null) {
+		while(DataProcessing.searchUser(name) == null) {
 			System.out.println("不存在该用户。");
-			System.exit(0);
+			System.out.print("请输入用户名:");
+			name = in.next();
 		}
 		System.out.print("请输入密码:");
 		password = in.next();
 		
 		User u = DataProcessing.search(name,password);
 		if(u == null) {
-			System.out.println("不存在该用户");
+			System.out.println("密码错误！退出系统");
 			return;
 		}
 		
 		int selector = 0;
 
-			do{
+			do{//选择菜单
 				u.showMenu();
 				System.out.print("请输入数字进行选择:");
 				selector = in.nextInt();
@@ -103,6 +104,8 @@ public class Main {
 					case 3:
 						operator.uploadFile();break;
 					case 4:
+						operator.setPassword(password);break;
+					case 5:
 						operator.exitSystem();
 					}
 				}
