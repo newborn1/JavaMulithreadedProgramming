@@ -1,12 +1,22 @@
-package addUserClass;
+package adduserclass;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
-import dataProcessing.*;
 
-public class Administrator extends User {
+import dataprocessing.DataProcessing;
+
+/**
+ * TODO 档案管理员类,对所有人的信息进行统一管理，继承了抽象用户类
+ * 
+ * @author 86134
+ * @data 2021/11/19
+ */
+public class Administrator extends AbstractUser {
 	public Administrator(String name,String password,String role) {
 		super(name,password,role);
 	}
+	@Override
 	public void showMenu() {
 		final String[] allLine = {"**************欢迎进入管理员菜单**********************\n",
 								  "\t\t\t1、显示文件列表\n",
@@ -29,36 +39,67 @@ public class Administrator extends User {
 		return;
 	}
 	
-	public boolean changeUserInfo() {
-		System.out.println("修改成功!");
+	/**
+	 * TODO 根据输入信息修改用户的信息
+	 * 
+	 * @return 判断是否操作成功
+	 * @throws SQLException
+	 */
+	public boolean changeUserInfo() throws SQLException {
+		String name,password,role;
+		try(Scanner sc = new Scanner(System.in))
+		{
+		System.out.print("请输入更新的用户名");
+		name = sc.next();
+		System.out.print("请输入更新的密码");
+		password = sc.next();
+		System.out.print("请输入更新的角色");
+		role = sc.next();
+		}
+		if(!DataProcessing.updateUser(name, password, role)) {
+//			throw new SQLException("Not Connected to Database");
+			return false;
+		}
 		return true;
 	}
 	
-	public boolean delUser() {
+	public boolean delAbstractUser() throws NullPointerException, SQLException,IOException {
 		System.out.print("请输入将删除的用户名：");
 		String name = null;
-		Scanner sc = new Scanner(System.in);
-		name = sc.next();
-		DataProcessing.delete(name);
+		try(Scanner sc = new Scanner(System.in))
+		{
+			name = sc.next();
+		}
+		if(name == null) {
+			throw new NullPointerException("this is a null pointer");
+		}
+		DataProcessing.deleteUser(name);
 		return true;
 	}
 	
-	public boolean addUser() {
-		Scanner sc = new Scanner(System.in);
-		System.out.print("请输入名字：");
+	public boolean addAbstractUser() throws SQLException {
+		String role = null;
+		String password = null;
 		String name = null;
+		try(Scanner sc = new Scanner(System.in))
+		{
+		System.out.print("请输入名字：");
 		name = sc.next();
 		System.out.print("请输入密码：");
-		String password = null;
 		password = sc.next();
 		System.out.print("请输入角色：");
-		String role = null;
 		role = sc.next();
-		DataProcessing.insert(name,password,role);
+		}
+		try {
+		DataProcessing.insertUser(name,password,role);
+		}
+		catch(SQLException e) {
+			throw e;
+		}
 		return true;
 	}
-	public boolean listUser() {
-		Enumeration<User> e = DataProcessing.getAllUser();
+	public boolean listAbstractUser() {
+		Enumeration<AbstractUser> e = DataProcessing.getAllUser();
 		while(e.hasMoreElements()) {
 			System.out.println(e.nextElement());
 		}

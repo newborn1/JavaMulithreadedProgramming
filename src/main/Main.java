@@ -1,69 +1,51 @@
 package main;
 
-import addUserClass.*;
+import java.sql.SQLException;
 import java.util.*;
-import dataProcessing.*;
 
+import adduserclass.*;
+import dataprocessing.*;
+import filesystem.*;
+
+/**
+ * TODO 作为主程序驱动程序
+ * 
+ * @author 郑伟鑫
+ * @data 2021/11/19
+ */
 public class Main {
-
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception{
 		// TODO Auto-generated method stub
 		
 		Administrator administrator = null;
 		Operator operator = null;
 		Browser browser = null;
 		
-		String lineone = "*******************欢迎进入档案系统**********************\n";
-		String linetwo = "\t\t\t  1、登录\n";
-		String linethree = "\t\t\t 2、退出\n";
-		String linefour = "********************************************************\n";
-		StringBuilder surface = new StringBuilder();
-		surface.append(lineone)
-		       .append(linetwo)
-		       .append(linethree)
-		       .append(linefour);
-		String mainSurface = surface.toString();
+		FileSystem.showMainUserface();
 		
-		System.out.println(mainSurface);
+//		Scanner in = new Scanner(System.in);
 		
 		System.out.print("请输入数字选择:");
-		Integer selection = 2;
-		Scanner in = new Scanner(System.in);
+		Integer selection = FileSystem.EXIT_SYSTEM;
+		try (Scanner in = new Scanner(System.in)) {
+				selection = in.nextInt();
+				if(selection.equals(FileSystem.EXIT_SYSTEM)) {
+					System.out.println("已退出系统");
+					System.exit(0);
+					return;
+				}
+			AbstractUser user = FileSystem.verifyUser();
+			int selector = 0;
 		
-		selection = in.nextInt();
-		if(selection.equals(2)) {
-			System.out.println("已退出系统");
-			System.exit(0);
-			return;
-		}
+			String password = user.getPassword();
+			String name = user.getName();
 		
-		String name = null;
-		String password = null;
-		
-		System.out.print("请输入用户名:");
-		name = in.next();
-		while(DataProcessing.searchUser(name) == null) {
-			System.out.println("不存在该用户。");
-			System.out.print("请输入用户名:");
-			name = in.next();
-		}
-		System.out.print("请输入密码:");
-		password = in.next();
-		
-		User u = DataProcessing.search(name,password);
-		if(u == null) {
-			System.out.println("密码错误！退出系统");
-			return;
-		}
-		
-		int selector = 0;
-
 			do{//选择菜单
-				u.showMenu();
+				user.showMenu();
 				System.out.print("请输入数字进行选择:");
 				selector = in.nextInt();
-				if(u instanceof Browser) {
-					browser = (Browser) u;
+				if(user instanceof Browser) {
+					browser = (Browser) user;
 					switch(selector) {
 					case 1:
 						browser.downloadFile("***");break;
@@ -72,13 +54,21 @@ public class Main {
 					case 3:
 						browser.setPassword(password);break;
 					case 4:
-						browser.exitSystem();
+						browser.exitSystem();break;
+					default:
+						break;
 					}
-				}else if(u instanceof Administrator){
-					administrator = (Administrator) u; 
+				}else if(user instanceof Administrator){
+					administrator = (Administrator) user; 
 					switch(selector) {
 					case 1:
-						administrator.showFileList();break;
+						try{
+							administrator.showFileList();break;
+						}catch(SQLException e) {
+							System.out.println(e.getMessage());
+							System.out.println("请重新输入!");
+							break;
+						}
 					case 2:
 						administrator.downloadFile(name);break;
 					case 3:
@@ -86,16 +76,18 @@ public class Main {
 					case 4:
 						administrator.changeUserInfo();break;
 					case 5:
-						administrator.delUser();break;
+						administrator.delAbstractUser();break;
 					case 6:
-						administrator.addUser();break;
+						administrator.addAbstractUser();break;
 					case 7:
-						administrator.listUser();break;
+						administrator.listAbstractUser();break;
 					case 8:
-						administrator.exitSystem();
+						administrator.exitSystem();break;
+					default:
+						break;
 					}
-				}else if(u instanceof Operator) {
-					operator =(Operator) u;
+				}else if(user instanceof Operator) {
+					operator =(Operator) user;
 					switch(selector) {
 					case 1:
 						operator.showFileList();break;
@@ -106,10 +98,13 @@ public class Main {
 					case 4:
 						operator.setPassword(password);break;
 					case 5:
-						operator.exitSystem();
+						operator.exitSystem();break;
+					default:
+						break;
 					}
 				}
 			}while(true);
 		}
-		
+	}
+
 }

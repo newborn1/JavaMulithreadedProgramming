@@ -1,9 +1,19 @@
-package addUserClass;
+package adduserclass;
 
-public class Browser extends User {
+
+/**
+ * TODO 浏览者，对某些个人信息进行修改，浏览文件，继承了抽象用户类
+ * 
+ * @author 86134
+ * @data 2021/11/19
+ */
+public class Browser extends AbstractUser {
 	public Browser(String name,String password,String role) {
-		super(name, password, role);//调用的构造器只能是本类的构造器。如何初始化父类的：用super
+		//调用的构造器只能是本类的构造器。如何初始化父类的：用super
+		super(name, password, role);
 	}
+	
+	@Override
 	public void showMenu() {
 		final String[] allLine = {"************欢迎进入档案浏览员菜单******************\n",
 								  "\t\t\t1、下载文件\n",
