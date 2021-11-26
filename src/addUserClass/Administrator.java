@@ -1,10 +1,13 @@
 package adduserclass;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.sql.SQLException;
 import java.util.*;
 
 import dataprocessing.DataProcessing;
+import static filesystem.FileSystem.in;
+import static filesystem.FileSystem.NotConnectedToDatabase;
 
 /**
  * TODO 档案管理员类,对所有人的信息进行统一管理，继承了抽象用户类
@@ -18,6 +21,9 @@ public class Administrator extends AbstractUser {
 	}
 	@Override
 	public void showMenu() {
+//		Administrator administrator = (Administrator) this;
+		Integer selector = 0;
+
 		final String[] allLine = {"**************欢迎进入管理员菜单**********************\n",
 								  "\t\t\t1、显示文件列表\n",
 								  "\t\t\t2、下载文件\n",
@@ -35,69 +41,122 @@ public class Administrator extends AbstractUser {
 		}
 		String surface = surfaceBuilder.toString();
 		System.out.print(surface);
-		
+
+
+		System.out.print("请输入数字进行选择:");
+		selector = in.nextInt();
+		switch(selector) {
+			case 1:
+				try{
+					this.showFileList();break;
+				}catch(SQLException e) {
+					System.out.println(e.getMessage());
+					System.out.println("请重新输入!");
+					break;
+				}
+			case 2:
+				this.downloadFile(this.getName());break;
+			case 3:
+				try {
+					this.changeSelfInfo(super.getPassword());
+				} catch (SQLException sqlE) {
+					System.out.println(sqlE.getMessage());
+					System.out.println("Please do it against.");
+					if(NotConnectedToDatabase.equals(sqlE.getMessage())){
+						DataProcessing.init();
+					}
+				}
+				break;
+			case 4:
+				while(!this.changeUserInfo()){
+					System.out.println("输入错误！请重新处理。");
+				};break;
+			case 5:
+				this.delAbstractUser();break;
+			case 6:
+				this.addAbstractUser();break;
+			case 7:
+				this.listAbstractUser();break;
+			case 8:
+				this.exitSystem();break;
+			default:
+				break;
+		}
+
 		return;
 	}
 	
 	/**
 	 * TODO 根据输入信息修改用户的信息
 	 * 
-	 * @return 判断是否操作成功
+	 * @return ture or false判断是否操作成功
 	 * @throws SQLException
 	 */
-	public boolean changeUserInfo() throws SQLException {
-		String name,password,role;
-		try(Scanner sc = new Scanner(System.in))
-		{
-		System.out.print("请输入更新的用户名");
-		name = sc.next();
-		System.out.print("请输入更新的密码");
-		password = sc.next();
-		System.out.print("请输入更新的角色");
-		role = sc.next();
-		}
-		if(!DataProcessing.updateUser(name, password, role)) {
-//			throw new SQLException("Not Connected to Database");
-			return false;
+	public boolean changeUserInfo() {
+		String name, password, role;
+		System.out.print("请输入更新的用户名:");
+		name = in.next();
+		System.out.print("请输入更新的密码:");
+		password = in.next();
+		System.out.print("请输入更新的角色:");
+		role = in.next();
+		try {
+			if (!DataProcessing.updateUser(name, password, role)) {
+				return false;
+			}
+		} catch (SQLException sqlE) {
+			System.out.println(sqlE.getMessage());
+			System.out.println("Please do it against.");
+			if (NotConnectedToDatabase.equals(sqlE.getMessage())) {
+				DataProcessing.init();
+			}
 		}
 		return true;
 	}
 	
-	public boolean delAbstractUser() throws NullPointerException, SQLException,IOException {
+	public boolean delAbstractUser() throws NullPointerException{
 		System.out.print("请输入将删除的用户名：");
 		String name = null;
-		try(Scanner sc = new Scanner(System.in))
-		{
-			name = sc.next();
+
+		name = in.next();
+
+		try {
+			DataProcessing.deleteUser(name);
+		}catch (SQLException sqlE){
+			System.out.println(sqlE.getMessage());
+			System.out.println("Please do it against.");
+			if(NotConnectedToDatabase.equals(sqlE.getMessage())){
+				DataProcessing.init();
+			}
 		}
-		if(name == null) {
-			throw new NullPointerException("this is a null pointer");
-		}
-		DataProcessing.deleteUser(name);
 		return true;
 	}
 	
-	public boolean addAbstractUser() throws SQLException {
+	public boolean addAbstractUser() {
 		String role = null;
 		String password = null;
 		String name = null;
-		try(Scanner sc = new Scanner(System.in))
-		{
+
 		System.out.print("请输入名字：");
-		name = sc.next();
+		name = in.next();
 		System.out.print("请输入密码：");
-		password = sc.next();
+		password = in.next();
 		System.out.print("请输入角色：");
-		role = sc.next();
-		}
+		role = in.next();
+
 		try {
-		DataProcessing.insertUser(name,password,role);
+			DataProcessing.insertUser(name, password, role);
+		} catch (SQLException sqlE) {
+			System.out.println(sqlE.getMessage());
+			System.out.println("Please do it against.");
+			if (NotConnectedToDatabase.equals(sqlE.getMessage())) {
+				DataProcessing.init();
+			}
 		}
-		catch(SQLException e) {
-			throw e;
-		}
+
 		return true;
 	}
+
 	public boolean listAbstractUser() {
 		Enumeration<AbstractUser> e = DataProcessing.getAllUser();
 		while(e.hasMoreElements()) {

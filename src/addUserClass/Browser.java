@@ -1,5 +1,9 @@
 package adduserclass;
 
+import java.sql.SQLException;
+import java.util.Scanner;
+
+import static filesystem.FileSystem.in;
 
 /**
  * TODO 浏览者，对某些个人信息进行修改，浏览文件，继承了抽象用户类
@@ -15,6 +19,10 @@ public class Browser extends AbstractUser {
 	
 	@Override
 	public void showMenu() {
+		//browser不需要强制类型转换
+//		Browser browser = (Browser) this;
+		Integer selector = 0;
+
 		final String[] allLine = {"************欢迎进入档案浏览员菜单******************\n",
 								  "\t\t\t1、下载文件\n",
 								  "\t\t\t2、文件列表\n",
@@ -29,7 +37,33 @@ public class Browser extends AbstractUser {
 		}
 		String surface = surfaceBuilder.toString();
 		System.out.print(surface);
-		
+
+
+		System.out.print("请输入数字进行选择:");
+		selector = in.nextInt();
+		switch(selector) {
+			case 1:
+				this.downloadFile("***");
+				break;
+			case 2:
+				try{
+					this.showFileList();
+				}catch (SQLException sqe){
+					System.out.println(sqe.getMessage());
+					System.out.println("The problem has been solved.Please input the selector against.");
+				}
+				break;
+			case 3:
+				this.setPassword(super.getPassword());
+				break;
+			case 4:
+				this.exitSystem();
+				break;
+			default:
+				break;
+		}
+
 		return;
 	}
+
 }

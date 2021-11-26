@@ -14,6 +14,11 @@ import dataprocessing.*;
  * @data 2021/11/19
  */
 public class FileSystem {
+	/**in 作为全局变量使用
+	 *
+	 */
+	public static Scanner in = new Scanner(System.in);
+	public static String NotConnectedToDatabase = "Not Connected to Database";
 	public static final int EXIT_SYSTEM = 2;
 	public static final int LOAD = 1;
 
@@ -21,32 +26,42 @@ public class FileSystem {
 	 * TODO 显示系统主界面
 	 * 
 	 * @param
-	 * @return
 	 */
-	public static void showMainUserface() {
+	public static void showMainUserSurface() {
 
-		String lineone = "*******************欢迎进入档案系统**********************\n";
-		String linetwo = "\t\t\t  1、登录\n";
-		String linethree = "\t\t\t 2、退出\n";
-		String linefour = "********************************************************\n";
+		String lineOne = "*******************欢迎进入档案系统**********************\n";
+		String lineTwo = "\t\t\t  1、登录\n";
+		String lineThree = "\t\t\t 2、退出\n";
+		String lineFour = "********************************************************\n";
 		StringBuilder surface = new StringBuilder();
-		surface.append(lineone).append(linetwo).append(linethree).append(linefour);
+		surface.append(lineOne).append(lineTwo).append(lineThree).append(lineFour);
 		String mainSurface = surface.toString();
 
 		System.out.println(mainSurface);
+
+
+		System.out.print("请输入数字选择:");
+		Integer selection = FileSystem.EXIT_SYSTEM;
+		selection = in.nextInt();
+		if (selection.equals(FileSystem.EXIT_SYSTEM)) {
+			filesystem.FileSystem.in.close();
+			System.out.println("已退出系统");
+			System.exit(0);
+			return;
+		}
 	}
 
-	public static AbstractUser verifyUser() throws IOException, SQLException {
+	public static AbstractUser verifyUser() {
 
 		String name = null;
 		String password = null;
 		AbstractUser u = null;
 
-		Scanner in = new Scanner(System.in);
 //		Console cons = System.console();
-		
+
 		while (true) {
 			System.out.print("请输入用户名:");
+			in.nextLine();
 			name = in.next();
 			try {
 				while (DataProcessing.searchUser(name) == null) {
@@ -61,20 +76,17 @@ public class FileSystem {
 				u = DataProcessing.searchUser(name, password);
 
 				if (u == null) {
-					System.out.println("密码错误！退出系统");
+					System.out.println("密码错误!");
 					return null;
 				}
 				return u;
 			} catch (SQLException e) {
-/*
-						e.printStackTrace();
-						System.out.println();
-*/
 				if ("Not Connected to Database".equals(e.getMessage())) {
 					DataProcessing.init();
 				}
 				System.out.println("请重新输入!");
 			}
 		}
+
 	}
 }

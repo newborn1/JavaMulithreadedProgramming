@@ -1,11 +1,9 @@
 package adduserclass;
 
 import java.sql.SQLException;
-//import java.io.IOException;
+import java.io.IOException;
 
 import dataprocessing.DataProcessing;
-
-
 
 /**
  * TODO 抽象用户类，为各用户子类提供模板
@@ -27,11 +25,9 @@ public abstract class AbstractUser {
 	
 	@Override
 	public String toString(){
-		return super.toString()
-				+"[name = " + name
-				+",password = " + password
-				+",role = " + role
-				+"]";
+		return  "name = " + name
+				+"password = " + password
+				+",role = " + role;
 	}
 	
 	/**
@@ -92,6 +88,7 @@ public abstract class AbstractUser {
 	 * @throws  
 	*/
 	public void exitSystem(){
+		filesystem.FileSystem.in.close();
 		System.out.println("系统退出, 谢谢使用 ! ");
 		System.exit(0);
 	}

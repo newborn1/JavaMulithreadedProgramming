@@ -10,7 +10,7 @@ import adduserclass.*;
  * @author Ö£Î°öÎ
  * @date 2021/11/23
  */
-public  class DataProcessing {
+public class DataProcessing {
 	private static boolean connectToDB=false;
 	static final double EXCEPTION_CONNECT_PROBABILITY=0.1;
 	static final double EXCEPTION_SQL_PROBABILITY=0.9;
@@ -39,6 +39,7 @@ public  class DataProcessing {
 	    public String getRole() {
             return role;
         }
+
 	}
 	
 	
@@ -101,7 +102,7 @@ public  class DataProcessing {
 		}
 	    double ranValue=Math.random();
 		if (ranValue>EXCEPTION_SQL_PROBABILITY) {
-			throw new SQLException("Error in excecuting Query");
+			throw new SQLException("Error in executing Query");
 		}
 		if (users.containsKey(name)) {
 		    AbstractUser temp =users.get(name);
@@ -216,7 +217,7 @@ public  class DataProcessing {
 		}
 		double ranValue=Math.random();
 		if (ranValue>EXCEPTION_SQL_PROBABILITY) {
-			throw new SQLException("Error in excecuting Delete");
+			throw new SQLException("Error in executing Delete");
 		}
 		if (users.containsKey(name)){
 			users.remove(name);
