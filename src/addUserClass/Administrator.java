@@ -10,7 +10,7 @@ import static filesystem.FileSystem.in;
 import static filesystem.FileSystem.NotConnectedToDatabase;
 
 /**
- * TODO 档案管理员类,对所有人的信息进行统一管理，继承了抽象用户类
+ * feature 档案管理员类,对所有人的信息进行统一管理，继承了抽象用户类
  * 
  * @author 86134
  * @data 2021/11/19
@@ -70,13 +70,19 @@ public class Administrator extends AbstractUser {
 			case 4:
 				while(!this.changeUserInfo()){
 					System.out.println("输入错误！请重新处理。");
-				};break;
+				}
+				break;
 			case 5:
 				this.delAbstractUser();break;
 			case 6:
 				this.addAbstractUser();break;
 			case 7:
-				this.listAbstractUser();break;
+				try {
+					this.listAbstractUser();
+				}catch (SQLException sqlE){
+					System.out.println(sqlE.getMessage());
+				}
+				break;
 			case 8:
 				this.exitSystem();break;
 			default:
@@ -87,7 +93,7 @@ public class Administrator extends AbstractUser {
 	}
 	
 	/**
-	 * TODO 根据输入信息修改用户的信息
+	 * feature 根据输入信息修改用户的信息
 	 * 
 	 * @return ture or false判断是否操作成功
 	 * @throws SQLException
@@ -157,8 +163,8 @@ public class Administrator extends AbstractUser {
 		return true;
 	}
 
-	public boolean listAbstractUser() {
-		Enumeration<AbstractUser> e = DataProcessing.getAllUser();
+	public boolean listAbstractUser() throws SQLException {
+		Enumeration<AbstractUser> e = DataProcessing.listUser();
 		while(e.hasMoreElements()) {
 			System.out.println(e.nextElement());
 		}

@@ -1,12 +1,21 @@
 package adduserclass;
 
+import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 import java.sql.SQLException;
+import java.util.Enumeration;
+import java.io.File;
 import java.io.IOException;
 
 import dataprocessing.DataProcessing;
+import dataprocessing.Doc;
+import filesystem.FileSystem;
+
 
 /**
- * TODO 抽象用户类，为各用户子类提供模板
+ * feature 抽象用户类，为各用户子类提供模板
  * 
  * @author 郑伟鑫
  * @date 2021/11/19
@@ -31,8 +40,7 @@ public abstract class AbstractUser {
 	}
 	
 	/**
-	 * TODO 通过密码验证是否正确来修改用户信息
-	 * 
+	 *
 	 * @param password 用户输入的验证密码
 	 * @return 判断是否修改成功过
 	 * @throws SQLException
@@ -50,23 +58,91 @@ public abstract class AbstractUser {
 	
 	
 	/**
-	 * TODO 展示菜单，需子类加以覆盖
-	 *   
+	 * 展示文件的菜单，需要被实现
 	 * @param 
 	 * @return void
 	 * @throws  
 	*/
 	public abstract void showMenu();
-	
+
+	/**
+	 * TODO 档案下载:根据档案号在哈希表中查找得到文件信息，在未涉及网络之前，只需实现在单机上将对应文件拷贝至指定目录中
+	 *
+	 * @param filename
+	 * @return
+	 */
 	public boolean downloadFile(String filename){
-		System.out.println("下载文件... ...");
+		Doc doc = null;
+		String id = null;
+		String path = null;
+
+		do {
+			System.out.print("请输入档案所对应的档案号:");
+			id = FileSystem.in.next().toString();
+			try {
+				doc = DataProcessing.searchDoc(id);
+			} catch (SQLException sqlE) {
+				System.out.println(sqlE.getMessage());
+				System.out.println("Connecting to Database...");
+				System.out.println("请重新输入！");
+			}
+			if(doc == null) {
+				System.out.println("找不到对应的档案，请重新输入:");
+			}
+		}while(doc == null);
+
+		/**
+		 * TODO 手动输入路径
+		 */
+		System.out.println("下载目录为：");
+		System.out.println("1、D:\\JavaExperiment\\LocalFile1");
+		System.out.println("2、D:\\JavaExperiment\\LocalFile2");
+		System.out.print("请选择你要下载到的目录中:");
+		while(path == null) {
+			switch (Integer.valueOf(FileSystem.in.next()).intValue()) {
+				case 1:
+					path = FileSystem.PATH1;
+					break;
+				case 2:
+					path = FileSystem.PATH2;
+					break;
+				default:
+					System.out.println("路径输入错误，请重新输入:");
+					break;
+			}
+		}
+		System.out.println("下载文件中......");
+		try {
+			Files.createDirectories(Paths.get(path));
+		}catch (IOException ioE){
+
+		}
+		path += "\\" + doc.getFilename();
+		File file = new File(path);
+		try {
+			if (!file.createNewFile()) {
+				System.out.println("该文件已下载到本地，请勿重复下载!");
+				return false;
+			}
+			else{
+				try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))){
+					out.writeObject(doc);
+				}
+			}
+		}catch (IOException ioE){
+			System.out.println("下载失败!");
+			ioE.printStackTrace();
+			return false;
+		}
+
+		System.out.println("下载完成！");
 		return true;
 	}
 	
 	
 	/**
-	 * TODO 展示档案文件列表
-	 * 
+	 * TODO 档案查询:实现按条件查询相应的档案文件信息，也可简化为展示所有档案文件信息.在未涉及数据库之前，档案信息存放在Hashtable中
+	 * TODO 按条件查询相应的档案文件信息
 	 * @param 
 	 * @return void
 	 * @throws SQLException 
@@ -76,13 +152,16 @@ public abstract class AbstractUser {
 		if (ranValue > EXCEPTION_PROBABILITY) {
 			throw new SQLException("Error in accessing file DB");
 		}
-		System.out.println("列表... ...");
+		System.out.println("...........Document list...........");
+		Enumeration<Doc> document = DataProcessing.listDoc();
+		while(document.hasMoreElements()){
+			System.out.println(document.nextElement());
+		}
 	}
 	
 	
 	/**
-	 * TODO 退出系统
-	 *   
+	 *
 	 * @param 
 	 * @return void
 	 * @throws  

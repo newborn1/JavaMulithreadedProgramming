@@ -8,7 +8,7 @@ import adduserclass.*;
 import dataprocessing.*;
 
 /**
- * TODO 管理系统类，用于与浏览员、管理员、操作者交互
+ * feature 管理系统类，用于与浏览员、管理员、操作者交互
  * 
  * @author 86134
  * @data 2021/11/19
@@ -21,9 +21,12 @@ public class FileSystem {
 	public static String NotConnectedToDatabase = "Not Connected to Database";
 	public static final int EXIT_SYSTEM = 2;
 	public static final int LOAD = 1;
+	public static final String PATH1 = "D:\\JavaExperiment\\LocalFile1";
+	public static final String PATH2 = "D:\\JavaExperiment\\LocalFile2";
+	public static final String REMOTE_PATH = "D:\\JavaExperiment\\RemoteFile";
 
 	/**
-	 * TODO 显示系统主界面
+	 * feature 显示系统主界面
 	 * 
 	 * @param
 	 */
@@ -57,8 +60,9 @@ public class FileSystem {
 		String password = null;
 		AbstractUser u = null;
 
-//		Console cons = System.console();
-
+		/**
+		 * TODO 对输入密码进行特殊处理
+		 */
 		while (true) {
 			System.out.print("请输入用户名:");
 			in.nextLine();
@@ -70,7 +74,6 @@ public class FileSystem {
 					name = in.next();
 				}
 				System.out.print("请输入密码:");
-//				password = new String(cons.readPassword("请输入密码:"));//读取密码
 				password = in.next();
 
 				u = DataProcessing.searchUser(name, password);

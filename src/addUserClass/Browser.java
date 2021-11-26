@@ -6,7 +6,7 @@ import java.util.Scanner;
 import static filesystem.FileSystem.in;
 
 /**
- * TODO 浏览者，对某些个人信息进行修改，浏览文件，继承了抽象用户类
+ * feature 浏览者，对某些个人信息进行修改，浏览文件，继承了抽象用户类
  * 
  * @author 86134
  * @data 2021/11/19

@@ -1,13 +1,15 @@
 package adduserclass;
 
+import java.io.*;
 import java.sql.SQLException;
-import java.util.Scanner;
 
+import dataprocessing.DataProcessing;
+import dataprocessing.Doc;
 import filesystem.FileSystem;
 import static filesystem.FileSystem.in;//should use static
 
 /**
- * TODO 档案操作员，对后台的文件进行统一管理，继承了抽象用户类 
+ * feature 档案操作员，对后台的文件进行统一管理，继承了抽象用户类
  *
  * @author 郑伟鑫
  * @data 2021/11/19
@@ -60,12 +62,52 @@ public class Operator extends AbstractUser{
 				break;
 		}
 
-		return;
 	}
 
+	/**
+	 * TODO 档案上传:输入新的档案文件属性信息，保存至Hashtable中，并将档案文件拷贝至指定目录中
+	 *
+	 * @return boolean
+	 */
 	public boolean uploadFile() {
+		String url = null;
+		Doc doc = null;
+		File file = null;
+		FileInputStream filestream = null;
+
+		System.out.println("请输入文件地址:");
+		url = FileSystem.in.next();
+		file = new File(url);
+
 		System.out.print("uploading...");
-		System.out.printf("upload file is sucessful");
+		try{
+			filestream = new FileInputStream(file);
+		}catch (FileNotFoundException fileE){
+			System.out.println("找不到该文件，上传失败！");
+			return false;
+		}
+
+		try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(FileSystem.REMOTE_PATH))) {
+			try (ObjectInputStream oin = new ObjectInputStream(filestream)) {
+				//将文档保存到HashTable和指定目录中
+				doc = (Doc) oin.readObject();
+				out.writeObject(doc);
+			}
+		}catch (IOException | ClassNotFoundException e) {
+			System.out.println("文件上传失败，请检查文件是否损坏！");
+			return false;
+		}
+		while(true) {
+			try {
+				DataProcessing.insertDoc(doc.getId(), doc.getCreator(), doc.getTimestamp(), doc.getDescription(), doc.getFilename());
+				break;
+			} catch (SQLException sqlE) {
+				DataProcessing.init();
+			}
+		}
+
+		System.out.println("upload file is successful");
 		return true;
 	}
+
 }
