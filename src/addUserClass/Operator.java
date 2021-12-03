@@ -1,7 +1,10 @@
 package adduserclass;
 
 import java.io.*;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 import java.sql.SQLException;
+import java.util.InputMismatchException;
 
 import dataprocessing.DataProcessing;
 import dataprocessing.Doc;
@@ -39,8 +42,16 @@ public class Operator extends AbstractUser{
 		String surface = surfaceBuilder.toString();
 		System.out.print(surface);
 
-		System.out.print("请输入数字进行选择:");
-		selector = in.nextInt();
+		while(true) {
+			System.out.print("请输入数字进行选择:");
+			try {
+				selector = in.nextInt();
+				break;
+			} catch (InputMismatchException inputMatchE) {
+				System.out.println("输入错误，请输入正确的数字！");
+				in.nextLine();
+			}
+		}
 		switch(selector) {
 			case 1:
 				try{
@@ -51,7 +62,7 @@ public class Operator extends AbstractUser{
 				}
 				break;
 			case 2:
-				this.downloadFile(super.getName());break;
+				this.downloadFile();break;
 			case 3:
 				this.uploadFile();break;
 			case 4:
@@ -59,27 +70,29 @@ public class Operator extends AbstractUser{
 			case 5:
 				this.exitSystem();break;
 			default:
-				break;
+				System.out.println("输入的值无效，请重新输入！");break;
 		}
 
 	}
 
 	/**
-	 * TODO 档案上传:输入新的档案文件属性信息，保存至Hashtable中，并将档案文件拷贝至指定目录中
+	 * 档案上传:输入新的档案文件属性信息，保存至Hashtable中，并将档案文件拷贝至指定目录中
+	 * TODO 将文档保存方式改变一下，并且进行上传有效性验证
 	 *
 	 * @return boolean
 	 */
 	public boolean uploadFile() {
 		String url = null;
+		String[] filenames = null;
 		Doc doc = null;
 		File file = null;
 		FileInputStream filestream = null;
 
-		System.out.println("请输入文件地址:");
+		System.out.print("请输入文件地址:");
 		url = FileSystem.in.next();
 		file = new File(url);
 
-		System.out.print("uploading...");
+		System.out.println("uploading...");
 		try{
 			filestream = new FileInputStream(file);
 		}catch (FileNotFoundException fileE){
@@ -87,7 +100,28 @@ public class Operator extends AbstractUser{
 			return false;
 		}
 
-		try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(FileSystem.REMOTE_PATH))) {
+		/**
+		 * 获得文件名称
+		 */
+		filenames = url.split("\\\\");
+
+		try{
+			Files.createFile(Paths.get(FileSystem.REMOTE_PATH));
+		}catch (IOException ioe){
+
+		}
+		File files = new File(FileSystem.REMOTE_PATH+"\\"+filenames[filenames.length-1]);
+		try{
+			if(!files.createNewFile()){
+				System.out.println("该文件已上传，请勿重复下载!");
+				return false;
+			}
+		}catch (IOException ioE){
+			System.out.println("上传失败!");
+			ioE.printStackTrace();
+			return false;
+		}
+		try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(files))) {
 			try (ObjectInputStream oin = new ObjectInputStream(filestream)) {
 				//将文档保存到HashTable和指定目录中
 				doc = (Doc) oin.readObject();
@@ -97,9 +131,22 @@ public class Operator extends AbstractUser{
 			System.out.println("文件上传失败，请检查文件是否损坏！");
 			return false;
 		}
+
+		String id= null;
+		String description = null;
+
+
+		System.out.println("请根据以下输入上传的文档的信息：");
+		System.out.print("Id号：");
+		id = in.next();
+		System.out.print("文档描述：");
+		description = in.next();
+
+
+
 		while(true) {
 			try {
-				DataProcessing.insertDoc(doc.getId(), doc.getCreator(), doc.getTimestamp(), doc.getDescription(), doc.getFilename());
+				DataProcessing.insertDoc(doc.getId(), this.getName(), doc.getTimestamp(), doc.getDescription(), doc.getFilename());
 				break;
 			} catch (SQLException sqlE) {
 				DataProcessing.init();

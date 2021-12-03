@@ -43,7 +43,7 @@ public class Browser extends AbstractUser {
 		selector = in.nextInt();
 		switch(selector) {
 			case 1:
-				this.downloadFile("***");
+				this.downloadFile();
 				break;
 			case 2:
 				try{

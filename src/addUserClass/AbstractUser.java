@@ -66,12 +66,11 @@ public abstract class AbstractUser {
 	public abstract void showMenu();
 
 	/**
-	 * TODO 档案下载:根据档案号在哈希表中查找得到文件信息，在未涉及网络之前，只需实现在单机上将对应文件拷贝至指定目录中
+	 * 档案下载:根据档案号在哈希表中查找得到文件信息，在未涉及网络之前，只需实现在单机上将对应文件拷贝至指定目录中
 	 *
-	 * @param filename
 	 * @return
 	 */
-	public boolean downloadFile(String filename){
+	public boolean downloadFile(){
 		Doc doc = null;
 		String id = null;
 		String path = null;
@@ -141,9 +140,10 @@ public abstract class AbstractUser {
 	
 	
 	/**
-	 * TODO 档案查询:实现按条件查询相应的档案文件信息，也可简化为展示所有档案文件信息.在未涉及数据库之前，档案信息存放在Hashtable中
+	 * 档案查询:实现按条件查询相应的档案文件信息，也可简化为展示所有档案文件信息.在未涉及数据库之前，档案信息存放在Hashtable中
 	 * TODO 按条件查询相应的档案文件信息
-	 * @param 
+	 *
+	 * @param
 	 * @return void
 	 * @throws SQLException 
 	*/

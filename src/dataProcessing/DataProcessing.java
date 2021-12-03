@@ -56,7 +56,7 @@ public class DataProcessing {
 	}
 
 	/**
-	 * TODO 初始化，连接数据库
+	 * 初始化，连接数据库
 	 *
 	 * @param
 	 * @return void

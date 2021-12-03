@@ -55,7 +55,7 @@ public class Administrator extends AbstractUser {
 					break;
 				}
 			case 2:
-				this.downloadFile(this.getName());break;
+				this.downloadFile();break;
 			case 3:
 				try {
 					this.changeSelfInfo(super.getPassword());

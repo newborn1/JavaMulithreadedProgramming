@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 /**
- * TODO 档案文件类未完成
+ * TODO 档案文件类未完善
  *
  * id 档案号
  * @author 郑伟鑫
