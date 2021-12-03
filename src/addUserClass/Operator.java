@@ -1,15 +1,17 @@
 package adduserclass;
 
-import java.io.*;
-import java.nio.file.Paths;
-import java.nio.file.Files;
-import java.sql.SQLException;
-import java.util.InputMismatchException;
-
 import dataprocessing.DataProcessing;
 import dataprocessing.Doc;
 import filesystem.FileSystem;
-import static filesystem.FileSystem.in;//should use static
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.InputMismatchException;
+
+import static filesystem.FileSystem.in;
 
 /**
  * feature 档案操作员，对后台的文件进行统一管理，继承了抽象用户类
@@ -113,7 +115,7 @@ public class Operator extends AbstractUser{
 		File files = new File(FileSystem.REMOTE_PATH+"\\"+filenames[filenames.length-1]);
 		try{
 			if(!files.createNewFile()){
-				System.out.println("该文件已上传，请勿重复下载!");
+				System.out.println("该文件已上传，请勿重复上传!");
 				return false;
 			}
 		}catch (IOException ioE){
@@ -142,11 +144,12 @@ public class Operator extends AbstractUser{
 		System.out.print("文档描述：");
 		description = in.next();
 
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 
 		while(true) {
 			try {
-				DataProcessing.insertDoc(doc.getId(), this.getName(), doc.getTimestamp(), doc.getDescription(), doc.getFilename());
+				DataProcessing.insertDoc(id, this.getName(), timestamp, description, doc.getFilename());
 				break;
 			} catch (SQLException sqlE) {
 				DataProcessing.init();
