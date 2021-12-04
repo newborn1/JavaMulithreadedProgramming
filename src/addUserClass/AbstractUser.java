@@ -46,6 +46,8 @@ public abstract class AbstractUser {
 	 * @throws SQLException
 	 */
 	public boolean changeSelfInfo(String password) throws SQLException {
+		//显示GUI界面
+
 		//写用户信息到存储
 		if (DataProcessing.updateUser(name, password, role)){
 			this.password=password;

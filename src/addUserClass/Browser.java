@@ -1,9 +1,9 @@
 package adduserclass;
 
-import java.sql.SQLException;
-import java.util.Scanner;
+import gui.MainBrowserFrame;
 
-import static filesystem.FileSystem.in;
+import javax.swing.*;
+import java.sql.SQLException;
 
 /**
  * feature 浏览者，对某些个人信息进行修改，浏览文件，继承了抽象用户类
@@ -12,6 +12,7 @@ import static filesystem.FileSystem.in;
  * @data 2021/11/19
  */
 public class Browser extends AbstractUser {
+
 	public Browser(String name,String password,String role) {
 		//调用的构造器只能是本类的构造器。如何初始化父类的：用super
 		super(name, password, role);
@@ -19,8 +20,10 @@ public class Browser extends AbstractUser {
 	
 	@Override
 	public void showMenu() {
-		//browser不需要强制类型转换
-//		Browser browser = (Browser) this;
+		JFrame mainFrame = new MainBrowserFrame(this);
+		((MainBrowserFrame) mainFrame).addAllComponent();
+		mainFrame.setVisible(true);
+
 		Integer selector = 0;
 
 		final String[] allLine = {"************欢迎进入档案浏览员菜单******************\n",
@@ -30,7 +33,7 @@ public class Browser extends AbstractUser {
 								  "\t\t\t4、退出\n",
 								  "***************************************************\n"
 		};
-		
+
 		StringBuilder surfaceBuilder = new StringBuilder();
 		for(String s:allLine) {
 			surfaceBuilder.append(s);
@@ -40,14 +43,14 @@ public class Browser extends AbstractUser {
 
 
 		System.out.print("请输入数字进行选择:");
-		selector = in.nextInt();
+//		selector = in.nextInt();
 		switch(selector) {
 			case 1:
 				this.downloadFile();
 				break;
 			case 2:
 				try{
-					this.showFileList();
+					super.showFileList();
 				}catch (SQLException sqe){
 					System.out.println(sqe.getMessage());
 					System.out.println("The problem has been solved.Please input the selector against.");
@@ -66,4 +69,13 @@ public class Browser extends AbstractUser {
 		return;
 	}
 
+	@Override
+	public void showFileList() {
+		try{
+			super.showFileList();
+		}catch (SQLException sqe){
+			System.out.println(sqe.getMessage());
+			System.out.println("The problem has been solved.Please input the selector against.");
+		}
+	}
 }

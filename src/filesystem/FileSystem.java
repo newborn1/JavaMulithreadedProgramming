@@ -1,11 +1,13 @@
 package filesystem;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
+import gui.MainSurfaceFrame;
 import adduserclass.*;
 import dataprocessing.*;
+
+import javax.swing.*;
 
 /**
  * feature 管理系统类，用于与浏览员、管理员、操作者交互
@@ -31,6 +33,13 @@ public class FileSystem {
 	 * @param
 	 */
 	public static void showMainUserSurface() {
+		/**
+		 * GUI
+		 */
+		JFrame loginFrame = new MainSurfaceFrame();
+		loginFrame.setVisible(true);
+		((MainSurfaceFrame) loginFrame).addAllComponent();
+
 
 		String lineOne = "*******************欢迎进入档案系统**********************\n";
 		String lineTwo = "\t\t\t  1、登录\n";
@@ -45,13 +54,13 @@ public class FileSystem {
 
 		System.out.print("请输入数字选择:");
 		Integer selection = FileSystem.EXIT_SYSTEM;
-		selection = in.nextInt();
-		if (selection.equals(FileSystem.EXIT_SYSTEM)) {
-			filesystem.FileSystem.in.close();
-			System.out.println("已退出系统");
-			System.exit(0);
-			return;
-		}
+//		selection = in.nextInt();
+//		if (selection.equals(FileSystem.EXIT_SYSTEM)) {
+//			filesystem.FileSystem.in.close();
+//			System.out.println("已退出系统");
+//			System.exit(0);
+//			return;
+//		}
 	}
 
 	public static AbstractUser verifyUser() {

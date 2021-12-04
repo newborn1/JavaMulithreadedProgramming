@@ -1,11 +1,13 @@
 package adduserclass;
 
-import java.io.IOException;
-import java.net.Inet4Address;
 import java.sql.SQLException;
 import java.util.*;
 
+import gui.MainAdministratorFrame;
 import dataprocessing.DataProcessing;
+
+import javax.swing.*;
+
 import static filesystem.FileSystem.in;
 import static filesystem.FileSystem.NotConnectedToDatabase;
 
@@ -21,7 +23,11 @@ public class Administrator extends AbstractUser {
 	}
 	@Override
 	public void showMenu() {
-//		Administrator administrator = (Administrator) this;
+		JFrame mainFrame = new MainAdministratorFrame(this);
+		((MainAdministratorFrame) mainFrame).addAllComponent();
+		mainFrame.setVisible(true);
+
+
 		Integer selector = 0;
 
 		final String[] allLine = {"**************欢迎进入管理员菜单**********************\n",
@@ -44,11 +50,10 @@ public class Administrator extends AbstractUser {
 
 
 		System.out.print("请输入数字进行选择:");
-		selector = in.nextInt();
 		switch(selector) {
 			case 1:
 				try{
-					this.showFileList();break;
+					super.showFileList();break;
 				}catch(SQLException e) {
 					System.out.println(e.getMessage());
 					System.out.println("请重新输入!");
@@ -58,7 +63,7 @@ public class Administrator extends AbstractUser {
 				this.downloadFile();break;
 			case 3:
 				try {
-					this.changeSelfInfo(super.getPassword());
+					super.changeSelfInfo(super.getPassword());
 				} catch (SQLException sqlE) {
 					System.out.println(sqlE.getMessage());
 					System.out.println("Please do it against.");
@@ -68,6 +73,9 @@ public class Administrator extends AbstractUser {
 				}
 				break;
 			case 4:
+				/**
+				 * 这个可以另外判断
+				 */
 				while(!this.changeUserInfo()){
 					System.out.println("输入错误！请重新处理。");
 				}
@@ -77,12 +85,7 @@ public class Administrator extends AbstractUser {
 			case 6:
 				this.addAbstractUser();break;
 			case 7:
-				try {
-					this.listAbstractUser();
-				}catch (SQLException sqlE){
-					System.out.println(sqlE.getMessage());
-				}
-				break;
+				listAbstractUser();break;
 			case 8:
 				this.exitSystem();break;
 			default:
@@ -163,12 +166,45 @@ public class Administrator extends AbstractUser {
 		return true;
 	}
 
-	public boolean listAbstractUser() throws SQLException {
-		Enumeration<AbstractUser> e = DataProcessing.listUser();
+	public boolean listAbstractUser() {
+		Enumeration<AbstractUser> e = null;
+		try{
+			e = DataProcessing.listUser();
+		}catch (SQLException sqlE){
+			System.out.println(sqlE.getMessage());
+			return false;
+		}
 		while(e.hasMoreElements()) {
 			System.out.println(e.nextElement());
 		}
 		return true;
 	}
 
+	/**
+	 * 有异常的就需要重载（为了实现GUI）
+	 */
+	@Override
+	public void showFileList() {
+		try {
+			super.showFileList();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			System.out.println("请重新输入!");
+		}
+	}
+
+	@Override
+	public boolean changeSelfInfo(String password){
+		try {
+			super.changeSelfInfo(super.getPassword());
+		} catch (SQLException sqlE) {
+			System.out.println(sqlE.getMessage());
+			System.out.println("Please do it against.");
+			if(NotConnectedToDatabase.equals(sqlE.getMessage())){
+				DataProcessing.init();
+			}
+			return false;
+		}
+		return true;
+	}
 }

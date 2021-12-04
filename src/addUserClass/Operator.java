@@ -1,17 +1,17 @@
 package adduserclass;
 
+import gui.MainOperatorFrame;
 import dataprocessing.DataProcessing;
 import dataprocessing.Doc;
 import filesystem.FileSystem;
 
+import javax.swing.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.InputMismatchException;
-
-import static filesystem.FileSystem.in;
 
 /**
  * feature 档案操作员，对后台的文件进行统一管理，继承了抽象用户类
@@ -23,9 +23,16 @@ public class Operator extends AbstractUser{
 	public Operator(String name,String password,String role) {
 		super(name,password,role);
 	}
-	
+
+	/**
+	 * TODO 修改各个类的showMenu()并且实现各个函数的功能即可
+	 */
 	@Override
 	public void showMenu() {
+		JFrame mainFrame = new MainOperatorFrame(this);
+		((MainOperatorFrame) mainFrame).addAllComponent();
+		mainFrame.setVisible(true);
+
 		Integer selector = 0;
 //		Operator operator = (Operator) this;
 
@@ -47,17 +54,17 @@ public class Operator extends AbstractUser{
 		while(true) {
 			System.out.print("请输入数字进行选择:");
 			try {
-				selector = in.nextInt();
+//				selector = in.nextInt();
 				break;
 			} catch (InputMismatchException inputMatchE) {
 				System.out.println("输入错误，请输入正确的数字！");
-				in.nextLine();
+//				in.nextLine();
 			}
 		}
 		switch(selector) {
 			case 1:
 				try{
-					this.showFileList();
+					super.showFileList();
 				}catch (SQLException sqe){
 					System.out.println(sqe.getMessage());
 					System.out.println("The problem has been solved.Please input the selector against.");
@@ -91,11 +98,11 @@ public class Operator extends AbstractUser{
 		FileInputStream filestream = null;
 
 		System.out.print("请输入文件地址:");
-		url = FileSystem.in.next();
+//		url = FileSystem.in.next();
 		file = new File(url);
 
-		System.out.println("uploading...");
 		try{
+			System.out.println("uploading...");
 			filestream = new FileInputStream(file);
 		}catch (FileNotFoundException fileE){
 			System.out.println("找不到该文件，上传失败！");
@@ -106,6 +113,15 @@ public class Operator extends AbstractUser{
 		 * 获得文件名称
 		 */
 		filenames = url.split("\\\\");
+
+
+		String id= null;
+		String description = null;
+		System.out.println("请根据以下输入上传的文档的信息：");
+		System.out.print("Id号：");
+//		id = in.next();
+		System.out.print("文档描述：");
+//		description = in.nextLine();
 
 		try{
 			Files.createFile(Paths.get(FileSystem.REMOTE_PATH));
@@ -134,18 +150,7 @@ public class Operator extends AbstractUser{
 			return false;
 		}
 
-		String id= null;
-		String description = null;
-
-
-		System.out.println("请根据以下输入上传的文档的信息：");
-		System.out.print("Id号：");
-		id = in.next();
-		System.out.print("文档描述：");
-		description = in.next();
-
 		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
 
 		while(true) {
 			try {
@@ -160,4 +165,13 @@ public class Operator extends AbstractUser{
 		return true;
 	}
 
+	@Override
+	public void showFileList(){
+		try{
+			super.showFileList();
+		}catch (SQLException sqe){
+			System.out.println(sqe.getMessage());
+			System.out.println("The problem has been solved.Please input the selector against.");
+		}
+	}
 }
