@@ -1,6 +1,6 @@
 package adduserclass;
 
-import gui.MainBrowserFrame;
+import gui.BrowserFrame;
 
 import javax.swing.*;
 import java.sql.SQLException;
@@ -20,8 +20,7 @@ public class Browser extends AbstractUser {
 	
 	@Override
 	public void showMenu() {
-		JFrame mainFrame = new MainBrowserFrame(this);
-		((MainBrowserFrame) mainFrame).addAllComponent();
+		JFrame mainFrame = new BrowserFrame(this);
 		mainFrame.setVisible(true);
 
 		Integer selector = 0;
@@ -46,7 +45,7 @@ public class Browser extends AbstractUser {
 //		selector = in.nextInt();
 		switch(selector) {
 			case 1:
-				this.downloadFile();
+				this.downloadFile(null);
 				break;
 			case 2:
 				try{
@@ -57,7 +56,14 @@ public class Browser extends AbstractUser {
 				}
 				break;
 			case 3:
-				this.setPassword(super.getPassword());
+				/**
+				 * TODO ÐÞ¸ÄÎÄ¼þ
+				 */
+				try {
+					changeSelfInfo(super.getPassword());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 				break;
 			case 4:
 				this.exitSystem();
@@ -69,13 +75,5 @@ public class Browser extends AbstractUser {
 		return;
 	}
 
-	@Override
-	public void showFileList() {
-		try{
-			super.showFileList();
-		}catch (SQLException sqe){
-			System.out.println(sqe.getMessage());
-			System.out.println("The problem has been solved.Please input the selector against.");
-		}
-	}
+
 }

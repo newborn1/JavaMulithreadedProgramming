@@ -1,6 +1,6 @@
 package adduserclass;
 
-import gui.MainOperatorFrame;
+import gui.OperatorFrame;
 import dataprocessing.DataProcessing;
 import dataprocessing.Doc;
 import filesystem.FileSystem;
@@ -19,9 +19,9 @@ import java.util.InputMismatchException;
  * @author 郑伟鑫
  * @data 2021/11/19
  */
-public class Operator extends AbstractUser{
-	public Operator(String name,String password,String role) {
-		super(name,password,role);
+public class Operator extends AbstractUser {
+	public Operator(String name, String password, String role) {
+		super(name, password, role);
 	}
 
 	/**
@@ -29,29 +29,28 @@ public class Operator extends AbstractUser{
 	 */
 	@Override
 	public void showMenu() {
-		JFrame mainFrame = new MainOperatorFrame(this);
-		((MainOperatorFrame) mainFrame).addAllComponent();
+		JFrame mainFrame = new OperatorFrame(this);
 		mainFrame.setVisible(true);
 
 		Integer selector = 0;
 //		Operator operator = (Operator) this;
 
 		final String[] allLine = {"*****************欢迎来到档案操作员菜单****************\n",
-						  		  "\t\t\t1、显示文件列表\n",
-						  		  "\t\t\t2、下载文件\n",
-						  		  "\t\t\t3、上传文件\n",
-						  		  "\t\t\t4、修改密码\n",
-						  		  "\t\t\t5、退出\n",
-						  		  "*******************************************************\n"
+				"\t\t\t1、显示文件列表\n",
+				"\t\t\t2、下载文件\n",
+				"\t\t\t3、上传文件\n",
+				"\t\t\t4、修改密码\n",
+				"\t\t\t5、退出\n",
+				"*******************************************************\n"
 		};
 		StringBuilder surfaceBuilder = new StringBuilder();
-		for(String s:allLine) {
+		for (String s : allLine) {
 			surfaceBuilder.append(s);
 		}
 		String surface = surfaceBuilder.toString();
 		System.out.print(surface);
 
-		while(true) {
+		while (true) {
 			System.out.print("请输入数字进行选择:");
 			try {
 //				selector = in.nextInt();
@@ -61,25 +60,30 @@ public class Operator extends AbstractUser{
 //				in.nextLine();
 			}
 		}
-		switch(selector) {
+		switch (selector) {
 			case 1:
-				try{
+				try {
 					super.showFileList();
-				}catch (SQLException sqe){
+				} catch (SQLException sqe) {
 					System.out.println(sqe.getMessage());
 					System.out.println("The problem has been solved.Please input the selector against.");
 				}
 				break;
 			case 2:
-				this.downloadFile();break;
+				this.downloadFile(null);
+				break;
 			case 3:
-				this.uploadFile();break;
+				this.uploadFile(null);
+				break;
 			case 4:
-				this.setPassword(super.getPassword());break;
+				this.setPassword(super.getPassword());
+				break;
 			case 5:
-				this.exitSystem();break;
+				this.exitSystem();
+				break;
 			default:
-				System.out.println("输入的值无效，请重新输入！");break;
+				System.out.println("输入的值无效，请重新输入！");
+				break;
 		}
 
 	}
@@ -90,88 +94,105 @@ public class Operator extends AbstractUser{
 	 *
 	 * @return boolean
 	 */
-	public boolean uploadFile() {
-		String url = null;
-		String[] filenames = null;
-		Doc doc = null;
-		File file = null;
-		FileInputStream filestream = null;
+	public boolean uploadFile(JPanel panel) {
+		JLabel idLabel = new JLabel("档案号");
+		JTextField idFiled = new JTextField("", 20);
+		panel.add(idLabel);
+		panel.add(idFiled);
+		JLabel descriptionLabel = new JLabel("档案描述");
+		JTextArea descriptionArea = new JTextArea("", 10, 20);
+		panel.add(descriptionLabel);
+		panel.add(descriptionArea);
+		JLabel filenameLabel = new JLabel("档案文件名");
+		JTextField filename = new JTextField("", 20);
+		panel.add(filenameLabel);
+		panel.add(filename);
 
-		System.out.print("请输入文件地址:");
-//		url = FileSystem.in.next();
-		file = new File(url);
-
-		try{
-			System.out.println("uploading...");
-			filestream = new FileInputStream(file);
-		}catch (FileNotFoundException fileE){
-			System.out.println("找不到该文件，上传失败！");
-			return false;
-		}
-
+		JButton bottonYes = new JButton("上传");
+		panel.add(bottonYes);
 		/**
-		 * 获得文件名称
+		 * 用lambda表达示才能调用this.getName()
 		 */
-		filenames = url.split("\\\\");
+		bottonYes.addActionListener(actionListener -> {
+			JFileChooser fileChooser = new JFileChooser();
+			//设置当前的所在目录
+			fileChooser.setCurrentDirectory(new File("."));
+			//设置可选文件和文件夹
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			//显示文件对话框为打开,result来保存status
+			int result = fileChooser.showOpenDialog(panel);
+			switch (result) {
+				case JFileChooser.CANCEL_OPTION:
+					JOptionPane.showConfirmDialog(bottonYes,"上传失败!","警告",JOptionPane.OK_CANCEL_OPTION);
+					System.out.println("上传失败");
+					break;
+				case JFileChooser.APPROVE_OPTION:
+					String path = fileChooser.getSelectedFile().getPath();
+					File file = new File(path);
+					FileInputStream filestream = null;
+					try {
+						System.out.println("uploading...");
+						filestream = new FileInputStream(file);
+					} catch (FileNotFoundException fileE) {
+						JOptionPane.showConfirmDialog(bottonYes,"找不到该文件，上传失败!","警告",JOptionPane.OK_CANCEL_OPTION);
+						System.out.println("找不到该文件，上传失败！");
+						return;
+					}
+					/**
+					 * 获得文件名称
+					 */
+					String[] filenames = path.split("\\\\");
+					String id = idFiled.getText();
+					String description = descriptionArea.getText();
+					try {
+						Files.createFile(Paths.get(FileSystem.REMOTE_PATH));
+					} catch (IOException ioe) {
 
+					}
+					File files = new File(FileSystem.REMOTE_PATH + "\\" + filenames[filenames.length - 1]);
+					Doc doc = null;
+					try {
+						if (!files.createNewFile()) {
+							JOptionPane.showConfirmDialog(bottonYes,"该文件已上传，请勿重复上传！","警告",JOptionPane.OK_CANCEL_OPTION);
+							System.out.println("该文件已上传，请勿重复上传!");
+							return;
+						}
+					} catch (IOException ioE) {
+						JOptionPane.showConfirmDialog(bottonYes,"上传失败！","警告",JOptionPane.OK_CANCEL_OPTION);
+						System.out.println("上传失败!");
+						ioE.printStackTrace();
+						return;
+					}
+					try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(files))) {
+						try (ObjectInputStream oin = new ObjectInputStream(filestream)) {
+							//将文档保存到HashTable和指定目录中上传失败
+							doc = (Doc) oin.readObject();
+							out.writeObject(doc);
+						}
+					} catch (IOException | ClassNotFoundException exception) {
+						System.out.println("文件上传失败，请检查文件是否损坏！");
+						JOptionPane.showConfirmDialog(bottonYes,"上传失败，请检查文件是否损坏！","警告",JOptionPane.OK_CANCEL_OPTION);
+						return;
+					}
 
-		String id= null;
-		String description = null;
-		System.out.println("请根据以下输入上传的文档的信息：");
-		System.out.print("Id号：");
-//		id = in.next();
-		System.out.print("文档描述：");
-//		description = in.nextLine();
+					Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-		try{
-			Files.createFile(Paths.get(FileSystem.REMOTE_PATH));
-		}catch (IOException ioe){
+					while (true) {
+						try {
+							DataProcessing.insertDoc(id, this.getName(), timestamp, description, doc.getFilename());
+							break;
+						} catch (SQLException sqlE) {
+							DataProcessing.init();
+						}
+					}
 
-		}
-		File files = new File(FileSystem.REMOTE_PATH+"\\"+filenames[filenames.length-1]);
-		try{
-			if(!files.createNewFile()){
-				System.out.println("该文件已上传，请勿重复上传!");
-				return false;
+					System.out.println("upload file is successful");
+					JOptionPane.showConfirmDialog(bottonYes,"upload file is successful！","警告",JOptionPane.OK_CANCEL_OPTION);
+					break;
+				default:
+					break;
 			}
-		}catch (IOException ioE){
-			System.out.println("上传失败!");
-			ioE.printStackTrace();
-			return false;
-		}
-		try(ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(files))) {
-			try (ObjectInputStream oin = new ObjectInputStream(filestream)) {
-				//将文档保存到HashTable和指定目录中
-				doc = (Doc) oin.readObject();
-				out.writeObject(doc);
-			}
-		}catch (IOException | ClassNotFoundException e) {
-			System.out.println("文件上传失败，请检查文件是否损坏！");
-			return false;
-		}
-
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
-		while(true) {
-			try {
-				DataProcessing.insertDoc(id, this.getName(), timestamp, description, doc.getFilename());
-				break;
-			} catch (SQLException sqlE) {
-				DataProcessing.init();
-			}
-		}
-
-		System.out.println("upload file is successful");
-		return true;
-	}
-
-	@Override
-	public void showFileList(){
-		try{
-			super.showFileList();
-		}catch (SQLException sqe){
-			System.out.println(sqe.getMessage());
-			System.out.println("The problem has been solved.Please input the selector against.");
-		}
+		});
+		return false;
 	}
 }

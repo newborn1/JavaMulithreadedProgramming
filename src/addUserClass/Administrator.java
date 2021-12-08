@@ -1,14 +1,15 @@
 package adduserclass;
 
+import java.awt.*;
 import java.sql.SQLException;
 import java.util.*;
 
-import gui.MainAdministratorFrame;
+import dataprocessing.Doc;
+import gui.AdministratorFrame;
 import dataprocessing.DataProcessing;
 
 import javax.swing.*;
 
-import static filesystem.FileSystem.in;
 import static filesystem.FileSystem.NotConnectedToDatabase;
 
 /**
@@ -23,8 +24,7 @@ public class Administrator extends AbstractUser {
 	}
 	@Override
 	public void showMenu() {
-		JFrame mainFrame = new MainAdministratorFrame(this);
-		((MainAdministratorFrame) mainFrame).addAllComponent();
+		JFrame mainFrame = new AdministratorFrame(this);
 		mainFrame.setVisible(true);
 
 
@@ -60,7 +60,7 @@ public class Administrator extends AbstractUser {
 					break;
 				}
 			case 2:
-				this.downloadFile();break;
+				this.downloadFile(null);break;
 			case 3:
 				try {
 					super.changeSelfInfo(super.getPassword());
@@ -76,16 +76,17 @@ public class Administrator extends AbstractUser {
 				/**
 				 * 这个可以另外判断
 				 */
-				while(!this.changeUserInfo()){
-					System.out.println("输入错误！请重新处理。");
-				}
+				this.changeUserInfo(null);
+//				while(!this.changeUserInfo(null)){
+//					System.out.println("输入错误！请重新处理。");
+//				}
 				break;
 			case 5:
-				this.delAbstractUser();break;
+				this.delAbstractUser(null);break;
 			case 6:
-				this.addAbstractUser();break;
+				this.addAbstractUser(null);break;
 			case 7:
-				listAbstractUser();break;
+				listAbstractUser(null);break;
 			case 8:
 				this.exitSystem();break;
 			default:
@@ -98,71 +99,223 @@ public class Administrator extends AbstractUser {
 	/**
 	 * feature 根据输入信息修改用户的信息
 	 * 
-	 * @return ture or false判断是否操作成功
 	 * @throws SQLException
 	 */
-	public boolean changeUserInfo() {
-		String name, password, role;
-		System.out.print("请输入更新的用户名:");
-		name = in.next();
-		System.out.print("请输入更新的密码:");
-		password = in.next();
-		System.out.print("请输入更新的角色:");
-		role = in.next();
+	public void changeUserInfo(JPanel panel) {
+		Label nameLabel = new Label("用户名");
+		JComboBox nameBox = new JComboBox();
+		nameBox.addItem(null);
+		Enumeration<AbstractUser> allUsers = null;
 		try {
-			if (!DataProcessing.updateUser(name, password, role)) {
-				return false;
-			}
-		} catch (SQLException sqlE) {
-			System.out.println(sqlE.getMessage());
-			System.out.println("Please do it against.");
-			if (NotConnectedToDatabase.equals(sqlE.getMessage())) {
-				DataProcessing.init();
-			}
+			allUsers = DataProcessing.listUser();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
+		//遍历获得所有的用户
+		while(allUsers.hasMoreElements()){
+			AbstractUser user = allUsers.nextElement();
+			nameBox.addItem(user.getName());
+		}
+
+
+		panel.add(nameBox);
+
+		panel.add(nameLabel);
+		panel.add(nameBox);
+		Label passwordNewLabel = new Label("密码");
+		JPasswordField passwordNewField = new JPasswordField(20);
+		panel.add(passwordNewLabel);
+		panel.add(passwordNewField);
+		Label roleLabel = new Label("身份");
+		JComboBox roleBox = new JComboBox();
+		roleBox.addItem("administrator");
+		roleBox.addItem("browser");
+		roleBox.addItem("operator");
+
+		panel.add(roleBox);
+		panel.add(roleLabel);
+		panel.add(roleBox);
+		/**
+		 * 每次都要new一个，不然只能显示最后一个
+		 */
+		JButton buttonYes  = new JButton("确定");
+		JButton buttonNo = new JButton("取消");
+		panel.add(buttonNo);
+		panel.add(buttonYes);
+		buttonYes.addActionListener(actionEvent -> {
+				try {
+					String name, password, role;
+
+					System.out.print("请输入更新的用户名:");
+					name = nameBox.getSelectedItem().toString();
+					System.out.print("请输入更新的密码:");
+					password = passwordNewField.getPassword().toString();
+					System.out.print("请输入更新的角色:");
+					role = roleBox.getSelectedItem().toString();
+
+					if (!DataProcessing.updateUser(name, password, role)) {
+						JOptionPane.showConfirmDialog(buttonYes,"密码错误!","警告",JOptionPane.OK_CANCEL_OPTION);
+						System.out.println("输入错误！请重新处理。");
+						return;
+					}
+				} catch (SQLException sqlE) {
+					System.out.println(sqlE.getMessage());
+					System.out.println("Please do it against.");
+					if (NotConnectedToDatabase.equals(sqlE.getMessage())) {
+						DataProcessing.init();
+					}
+				}
+		});
+
+	}
+	
+	public boolean delAbstractUser(JPanel panel) throws NullPointerException{
+		listAbstractUser(panel);
+		/*Label nameLabel = new Label("用户名");
+		JComboBox nameBox = new JComboBox();
+		nameBox.addItem(null);
+		Enumeration<AbstractUser> allUsers = null;
+		try {
+			allUsers = DataProcessing.listUser();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		//遍历获得所有的用户
+		while(allUsers.hasMoreElements()){
+			AbstractUser user = allUsers.nextElement();
+			nameBox.addItem(user.getName());
+		}
+
+		panel.add(nameLabel);
+		panel.add(nameBox);*/
+		JButton buttonYes = new JButton("确定");
+		JButton buttonNo = new JButton("取消");
+		panel.add(buttonYes);
+		panel.add(buttonNo);
+
+		buttonYes.addActionListener(actionListener -> {
+			/**
+			 * 获得JTable组件
+			 */
+			int count = panel.getComponentCount();
+			JTable tableData = null;
+			for(int i = 0;i < count;i++) {
+				Object component = panel.getComponent(i);
+				if(component instanceof JScrollPane) {
+					JScrollPane scrollPane = ((JScrollPane) component);
+					tableData = (JTable) scrollPane.getViewport().getComponent(0);
+				}
+			}
+			int selectedRow = tableData.getSelectedRow();
+
+			System.out.print("请输入将删除的用户名：");
+			JOptionPane.showConfirmDialog(buttonYes,"请输入将删除的用户名：","警告",JOptionPane.OK_CANCEL_OPTION);
+			String name = tableData.getValueAt(selectedRow, 0).toString();
+			try {
+				DataProcessing.deleteUser(name);
+			}catch (SQLException sqlE){
+				System.out.println(sqlE.getMessage());
+				System.out.println("Please do it against.");
+				JOptionPane.showConfirmDialog(buttonYes,"Please do it against.","警告",JOptionPane.OK_CANCEL_OPTION);
+				if(NotConnectedToDatabase.equals(sqlE.getMessage())){
+					DataProcessing.init();
+				}
+				return;
+			}
+			panel.removeAll();
+			delAbstractUser(panel);
+		});
+
+
+
 		return true;
 	}
 	
-	public boolean delAbstractUser() throws NullPointerException{
-		System.out.print("请输入将删除的用户名：");
-		String name = null;
+	public boolean addAbstractUser(JPanel panel) {
+		Label nameLabel = new Label("用户名");
+		JTextField nameField = new JTextField("",20);
+		panel.add(nameLabel);
+		panel.add(nameField);
+		Label passwordLabel = new Label("密码");
+		JPasswordField passwordField = new JPasswordField("",20);
+		panel.add(passwordLabel);
+		panel.add(passwordField);
+		Label roleLabel = new Label("身份");
+		JComboBox roleBox = new JComboBox();
+		roleBox.addItem(null);
+		roleBox.addItem(this.getRole());
+		panel.add(roleLabel);
+		panel.add(roleBox);
+		JButton buttonYes = new JButton("确定");
+		JButton buttonNo = new JButton("取消");
+		panel.add(buttonYes);
+		panel.add(buttonNo);
 
-		name = in.next();
+		buttonYes.addActionListener(actionListener -> {
+			String role = "";
+			String password = "";
+			String name = "";
 
-		try {
-			DataProcessing.deleteUser(name);
-		}catch (SQLException sqlE){
-			System.out.println(sqlE.getMessage());
-			System.out.println("Please do it against.");
-			if(NotConnectedToDatabase.equals(sqlE.getMessage())){
-				DataProcessing.init();
+			System.out.print("请输入名字：");
+//			name = in.next();
+			name = nameField.getText();
+			System.out.print("请输入密码：");
+//			password = in.next();
+			password = passwordField.getPassword().toString();
+			System.out.print("请输入角色：");
+//			role = in.next();
+			role = roleBox.getSelectedItem().toString();
+
+			try {
+				DataProcessing.insertUser(name, password, role);
+			} catch (SQLException sqlE) {
+				System.out.println(sqlE.getMessage());
+				System.out.println("Please do it against.");
+				JOptionPane.showConfirmDialog(buttonYes,"Please do it against.","警告",JOptionPane.OK_CANCEL_OPTION);
+				if (NotConnectedToDatabase.equals(sqlE.getMessage())) {
+					DataProcessing.init();
+				}
 			}
-		}
+
+		});
+
 		return true;
 	}
-	
-	public boolean addAbstractUser() {
-		String role = null;
-		String password = null;
-		String name = null;
 
-		System.out.print("请输入名字：");
-		name = in.next();
-		System.out.print("请输入密码：");
-		password = in.next();
-		System.out.print("请输入角色：");
-		role = in.next();
-
+	public boolean listAbstractUser(JPanel panel){
+		Object[][] tableData = new Object[100][5];
 		try {
-			DataProcessing.insertUser(name, password, role);
-		} catch (SQLException sqlE) {
-			System.out.println(sqlE.getMessage());
-			System.out.println("Please do it against.");
-			if (NotConnectedToDatabase.equals(sqlE.getMessage())) {
-				DataProcessing.init();
+			Enumeration<AbstractUser> users = DataProcessing.listUser();
+			AbstractUser user = null;
+			int index = 0;
+			while(users.hasMoreElements()){
+				user = users.nextElement();
+
+				tableData[index][0] = user.getName();
+				tableData[index][1] = user.getPassword();
+				tableData[index][2] = user.getRole();
+
+				index++;
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
+		String[] tableName = {"用户名","密码","身份"};
+		JTable fileTable = new JTable(tableData,tableName);
+		panel.add(new JScrollPane(fileTable));
+		try {
+			showFileList();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			System.out.println("The problem has been solved.Please input the selector against.");
+			/**
+			 * TODO 这里的buttonYes能不能换成panel,为什么
+			 */
+			JOptionPane.showConfirmDialog(panel,"The problem has been solved.Please input the selector against.","警告",JOptionPane.OK_CANCEL_OPTION);
+			System.out.println("请重新输入!");
+			JOptionPane.showConfirmDialog(panel,"请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
+		}
 		return true;
 	}
 
@@ -183,28 +336,4 @@ public class Administrator extends AbstractUser {
 	/**
 	 * 有异常的就需要重载（为了实现GUI）
 	 */
-	@Override
-	public void showFileList() {
-		try {
-			super.showFileList();
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			System.out.println("请重新输入!");
-		}
-	}
-
-	@Override
-	public boolean changeSelfInfo(String password){
-		try {
-			super.changeSelfInfo(super.getPassword());
-		} catch (SQLException sqlE) {
-			System.out.println(sqlE.getMessage());
-			System.out.println("Please do it against.");
-			if(NotConnectedToDatabase.equals(sqlE.getMessage())){
-				DataProcessing.init();
-			}
-			return false;
-		}
-		return true;
-	}
 }
