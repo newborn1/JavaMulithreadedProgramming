@@ -10,8 +10,8 @@ import java.awt.*;
  * @author Ö£Î°öÎ
  * @data 2021/11/19
  */
-public class Main {
-	public static void main(String[] args) throws Exception {
+public class Main1 {
+	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 		/**
@@ -28,6 +28,5 @@ public class Main {
 			}
 		});
 	}
-
 
 }
