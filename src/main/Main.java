@@ -10,7 +10,7 @@ import java.awt.*;
  * @author Ö£Î°öÎ
  * @data 2021/11/19
  */
-public class Main1 {
+public class Main {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 

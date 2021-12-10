@@ -49,4 +49,7 @@ public class OperatorFrame extends AbstractFrame {
         setVisible(true);
     }
 
+    public static void main(String[] args) {
+
+    }
 }

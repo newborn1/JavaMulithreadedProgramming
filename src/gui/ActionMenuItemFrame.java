@@ -17,12 +17,10 @@ public class ActionMenuItemFrame extends JFrame {
     private  int height;
 
     private AbstractUser user;
-//    private Method method;
     private JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
     public ActionMenuItemFrame(AbstractUser user,Method method,String title,int nowTabIndex){
         this.user = user;
-//        this.method = method;
 
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();
@@ -37,6 +35,7 @@ public class ActionMenuItemFrame extends JFrame {
         addAllComponent(nowTabIndex);
 
         this.add(tabbedPane);
+        pack();
         tabbedPane.setVisible(true);
         setVisible(true);
     }

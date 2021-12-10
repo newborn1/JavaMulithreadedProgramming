@@ -16,6 +16,7 @@ import dataprocessing.DataProcessing;
 import dataprocessing.Doc;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import static filesystem.FileSystem.NotConnectedToDatabase;
 
@@ -56,34 +57,48 @@ public abstract class AbstractUser {
 	 */
 	public boolean changeSelfInfo(JPanel panel){
 		/**
+		 * TODO 修改密码后不能登录
 		 * 添加用户名，密码，角色，按钮组件并绑定确定按钮
 		 */
-
+		panel.setLayout(new GridLayout(0,1));
+		JPanel panel1 = new JPanel();
 		Label nameLabel = new Label("用户名");
 		JTextField nameField = new JTextField(this.getName());
 		nameField.setEditable(false);
-		panel.add(nameLabel);
-		panel.add(nameField);
+		panel1.add(nameLabel);
+		panel1.add(nameField);
+		JPanel panel2 = new JPanel();
+		JPanel panel3 = new JPanel();
 		Label passwordOldLabel = new Label("旧密码");
 		Label passwordNewLabel = new Label("新密码");
 		JPasswordField passwordOldField = new JPasswordField(20);
 		JPasswordField passwordNewField = new JPasswordField(20);
-		panel.add(passwordOldLabel);
-		panel.add(passwordOldField);
-		panel.add(passwordNewLabel);
-		panel.add(passwordNewField);
+		panel2.add(passwordOldLabel);
+		panel2.add(passwordOldField);
+		panel3.add(passwordNewLabel);
+		panel3.add(passwordNewField);
+		JPanel panel4 = new JPanel();
 		Label roleLabel = new Label("身份");
 		JTextField roleField = new JTextField(this.getRole());
 		roleField.setEditable(false);
-		panel.add(roleLabel);
-		panel.add(roleField);
+		panel4.add(roleLabel);
+		panel4.add(roleField);
 		/**
 		 * 每次都要new一个，不然只能显示最后一个
 		 */
+		JPanel panel5 = new JPanel();
 		JButton buttonYes  = new JButton("确定");
 		JButton buttonNo = new JButton("取消");
-		panel.add(buttonNo);
-		panel.add(buttonYes);
+		panel5.add(buttonYes);
+		panel5.add(buttonNo);
+
+		panel.add(new JPanel());
+		panel.add(panel1);
+		panel.add(panel2);
+		panel.add(panel3);
+		panel.add(panel4);
+		panel.add(panel5);
+		panel.add(new JPanel());
 
 		final boolean[] flag = {true};
 		/**
@@ -95,7 +110,7 @@ public abstract class AbstractUser {
 				String oldPassword ="", newPassword="";
 
 				System.out.print("请输入更新的密码:");
-				oldPassword = passwordOldField.getPassword().toString();
+				oldPassword = new String(passwordOldField.getPassword());
 				if(!this.getPassword().equals(oldPassword)){
 					JOptionPane.showConfirmDialog(buttonYes,"密码错误!","警告",JOptionPane.OK_CANCEL_OPTION);
 					System.out.println("输入错误！请重新处理。");
@@ -106,6 +121,7 @@ public abstract class AbstractUser {
 				if (!DataProcessing.updateUser(this.getName(), newPassword, this.getRole())) {
 					return;
 				}
+				JOptionPane.showConfirmDialog(buttonYes,"修改成功!","提示",JOptionPane.OK_CANCEL_OPTION);
 			} catch (SQLException sqlE) {
 				System.out.println(sqlE.getMessage());
 				System.out.println("Please do it against.");
@@ -151,89 +167,91 @@ public abstract class AbstractUser {
 	 * @return
 	 */
 	public boolean downloadFile(JPanel panel){
+		panel.setLayout(new BorderLayout());
 		//显示文件夹
-		showFileList(panel);
+		JPanel panel1 = new JPanel();
+		showFileList(panel1);
 		JButton buttonYes = new JButton("确定");
-		panel.add(buttonYes);
-		buttonYes.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
-				//设置当前的所在目录
-				fileChooser.setCurrentDirectory(new File("."));
-				//设置可选文件和文件夹
-				fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-				//显示文件对话框为保存,result来保存status
-				int result = fileChooser.showSaveDialog(panel);
-				switch (result) {
-					case JFileChooser.ERROR_OPTION:
-						System.out.println("打开失败");
-						break;
-					case JFileChooser.CANCEL_OPTION:
-						System.out.println("下载失败");
-						break;
-					case JFileChooser.APPROVE_OPTION:
-						/**
-						 * 获得JTable组件
-						 */
-						int count = panel.getComponentCount();
-						JTable tableData = null;
-						for(int i = 0;i < count;i++) {
-							Object component = panel.getComponent(i);
-							if(component instanceof JScrollPane) {
-								JScrollPane scrollPane = ((JScrollPane) component);
-								tableData = (JTable) scrollPane.getViewport().getComponent(0);
-							}
+		JPanel panel2 = new JPanel();
+		panel2.add(buttonYes);
+		panel.add(panel1,BorderLayout.CENTER);
+		panel.add(panel2,BorderLayout.SOUTH);
+		buttonYes.addActionListener(e -> {
+			JFileChooser fileChooser = new JFileChooser();
+			//设置当前的所在目录
+			fileChooser.setCurrentDirectory(new File("."));
+			//设置可选文件和文件夹
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+			//显示文件对话框为保存,result来保存status
+			int result = fileChooser.showSaveDialog(panel);
+			switch (result) {
+				case JFileChooser.ERROR_OPTION:
+					System.out.println("打开失败");
+					break;
+				case JFileChooser.CANCEL_OPTION:
+					System.out.println("下载失败");
+					break;
+				case JFileChooser.APPROVE_OPTION:
+					/**
+					 * 获得JTable组件
+					 */
+					int count = panel.getComponentCount();
+					JTable tableData = null;
+					for(int i = 0;i < count;i++) {
+						Object component = panel.getComponent(i);
+						if(component instanceof JScrollPane) {
+							JScrollPane scrollPane = ((JScrollPane) component);
+							tableData = (JTable) scrollPane.getViewport().getComponent(0);
 						}
-						int selectedRow = tableData.getSelectedRow();
+					}
+					int selectedRow = tableData.getSelectedRow();
 
-						Doc doc = null;
-						String id = tableData.getValueAt(selectedRow, 0).toString();
-						try {
-							doc = DataProcessing.searchDoc(id);
-						} catch (SQLException sqlE) {
-							System.out.println(sqlE.getMessage());
-							System.out.println("Connecting to Database...");
-							JOptionPane.showConfirmDialog(buttonYes, "连接数据库失败，请重新输入。", "警告", JOptionPane.OK_CANCEL_OPTION);
-							System.out.println("请重新输入！");
-						}
-						if (doc == null) {
-							JOptionPane.showConfirmDialog(buttonYes, "找不到对应的档案。", "警告", JOptionPane.OK_CANCEL_OPTION);
-							System.out.println("找不到对应的档案，请重新输入:");
-						}
-						System.out.println("下载文件中......");
-						String path = fileChooser.getSelectedFile().getPath();
-						File file = new File(path + "\\" + doc.getFilename());
+					Doc doc = null;
+					String id = tableData.getValueAt(selectedRow, 0).toString();
+					try {
+						doc = DataProcessing.searchDoc(id);
+					} catch (SQLException sqlE) {
+						System.out.println(sqlE.getMessage());
+						System.out.println("Connecting to Database...");
+						JOptionPane.showConfirmDialog(buttonYes, "连接数据库失败，请重新输入。", "警告", JOptionPane.OK_CANCEL_OPTION);
+						System.out.println("请重新输入！");
+					}
+					if (doc == null) {
+						JOptionPane.showConfirmDialog(buttonYes, "找不到对应的档案。", "警告", JOptionPane.OK_CANCEL_OPTION);
+						System.out.println("找不到对应的档案，请重新输入:");
+					}
+					System.out.println("下载文件中......");
+					String path = fileChooser.getSelectedFile().getPath();
+					File file = new File(path + "\\" + doc.getFilename());
 
-						try {
-							Files.createDirectories(Paths.get(path));
-						} catch (IOException ioE) {
+					try {
+						Files.createDirectories(Paths.get(path));
+					} catch (IOException ioE) {
 
-						}
+					}
 
-						try {
-							if (!file.createNewFile()) {
-								JOptionPane.showConfirmDialog(buttonYes, "该文件已下载到本地，请勿重复下载!", "警告", JOptionPane.OK_CANCEL_OPTION);
-								System.out.println("该文件已下载到本地，请勿重复下载!");
-								return;
-							} else {
-								try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
-									out.writeObject(doc);
-								}
-							}
-						} catch (IOException ioE) {
-							JOptionPane.showConfirmDialog(buttonYes, "下载失败!", "警告", JOptionPane.OK_CANCEL_OPTION);
-							System.out.println("下载失败!");
-							ioE.printStackTrace();
+					try {
+						if (!file.createNewFile()) {
+							JOptionPane.showConfirmDialog(buttonYes, "该文件已下载到本地，请勿重复下载!", "警告", JOptionPane.OK_CANCEL_OPTION);
+							System.out.println("该文件已下载到本地，请勿重复下载!");
 							return;
+						} else {
+							try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+								out.writeObject(doc);
+							}
 						}
-						System.out.println("下载成功");
-						break;
-					default:
-						break;
-				}
-
+					} catch (IOException ioE) {
+						JOptionPane.showConfirmDialog(buttonYes, "下载失败!", "警告", JOptionPane.OK_CANCEL_OPTION);
+						System.out.println("下载失败!");
+						ioE.printStackTrace();
+						return;
+					}
+					System.out.println("下载成功");
+					break;
+				default:
+					break;
 			}
+
 		});
 
 		return true;
@@ -273,7 +291,10 @@ public abstract class AbstractUser {
 			System.out.println(e.getMessage());
 			System.out.println("The problem has been solved.Please input the selector against.");
 			System.out.println("请重新输入!");
-			JOptionPane.showConfirmDialog(buttonYes,"操作失败，请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
+			/**
+			 * TODO 异常处理
+			 */
+//			JOptionPane.showConfirmDialog(buttonYes,"操作失败，请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
 		}
 	}
 	/**

@@ -6,6 +6,7 @@ import dataprocessing.Doc;
 import filesystem.FileSystem;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -33,7 +34,6 @@ public class Operator extends AbstractUser {
 		mainFrame.setVisible(true);
 
 		Integer selector = 0;
-//		Operator operator = (Operator) this;
 
 		final String[] allLine = {"*****************欢迎来到档案操作员菜单****************\n",
 				"\t\t\t1、显示文件列表\n",
@@ -53,11 +53,9 @@ public class Operator extends AbstractUser {
 		while (true) {
 			System.out.print("请输入数字进行选择:");
 			try {
-//				selector = in.nextInt();
 				break;
 			} catch (InputMismatchException inputMatchE) {
 				System.out.println("输入错误，请输入正确的数字！");
-//				in.nextLine();
 			}
 		}
 		switch (selector) {
@@ -95,25 +93,35 @@ public class Operator extends AbstractUser {
 	 * @return boolean
 	 */
 	public boolean uploadFile(JPanel panel) {
-		JLabel idLabel = new JLabel("档案号");
+		panel.setLayout(new GridLayout(0,1));
+		JPanel panel1 = new JPanel();
+		JPanel panel2 = new JPanel();
+		JPanel panel3 = new JPanel();
+		JLabel idLabel = new JLabel("   档案号");
 		JTextField idFiled = new JTextField("", 20);
-		panel.add(idLabel);
-		panel.add(idFiled);
+		panel1.add(idLabel);
+		panel1.add(idFiled);
 		JLabel descriptionLabel = new JLabel("档案描述");
-		JTextArea descriptionArea = new JTextArea("", 10, 20);
-		panel.add(descriptionLabel);
-		panel.add(descriptionArea);
+		JTextArea descriptionArea = new JTextArea("", 5, 20);
+		panel2.add(descriptionLabel);
+		panel2.add(descriptionArea);
 		JLabel filenameLabel = new JLabel("档案文件名");
-		JTextField filename = new JTextField("", 20);
-		panel.add(filenameLabel);
-		panel.add(filename);
+		JTextField filename = new JTextField("", 15);
+		panel3.add(filenameLabel);
+		panel3.add(filename);
 
-		JButton bottonYes = new JButton("上传");
-		panel.add(bottonYes);
+		JButton buttonYes = new JButton("上传");
+		panel3.add(buttonYes);
+
+		panel.add(new JPanel());
+		panel.add(panel1);
+		panel.add(panel2);
+		panel.add(panel3);
+		panel.add(new JPanel());
 		/**
 		 * 用lambda表达示才能调用this.getName()
 		 */
-		bottonYes.addActionListener(actionListener -> {
+		buttonYes.addActionListener(actionListener -> {
 			JFileChooser fileChooser = new JFileChooser();
 			//设置当前的所在目录
 			fileChooser.setCurrentDirectory(new File("."));
@@ -123,7 +131,7 @@ public class Operator extends AbstractUser {
 			int result = fileChooser.showOpenDialog(panel);
 			switch (result) {
 				case JFileChooser.CANCEL_OPTION:
-					JOptionPane.showConfirmDialog(bottonYes,"上传失败!","警告",JOptionPane.OK_CANCEL_OPTION);
+					JOptionPane.showConfirmDialog(buttonYes,"上传失败!","警告",JOptionPane.OK_CANCEL_OPTION);
 					System.out.println("上传失败");
 					break;
 				case JFileChooser.APPROVE_OPTION:
@@ -134,7 +142,7 @@ public class Operator extends AbstractUser {
 						System.out.println("uploading...");
 						filestream = new FileInputStream(file);
 					} catch (FileNotFoundException fileE) {
-						JOptionPane.showConfirmDialog(bottonYes,"找不到该文件，上传失败!","警告",JOptionPane.OK_CANCEL_OPTION);
+						JOptionPane.showConfirmDialog(buttonYes,"找不到该文件，上传失败!","警告",JOptionPane.OK_CANCEL_OPTION);
 						System.out.println("找不到该文件，上传失败！");
 						return;
 					}
@@ -153,12 +161,12 @@ public class Operator extends AbstractUser {
 					Doc doc = null;
 					try {
 						if (!files.createNewFile()) {
-							JOptionPane.showConfirmDialog(bottonYes,"该文件已上传，请勿重复上传！","警告",JOptionPane.OK_CANCEL_OPTION);
+							JOptionPane.showConfirmDialog(buttonYes,"该文件已上传，请勿重复上传！","警告",JOptionPane.OK_CANCEL_OPTION);
 							System.out.println("该文件已上传，请勿重复上传!");
 							return;
 						}
 					} catch (IOException ioE) {
-						JOptionPane.showConfirmDialog(bottonYes,"上传失败！","警告",JOptionPane.OK_CANCEL_OPTION);
+						JOptionPane.showConfirmDialog(buttonYes,"上传失败！","警告",JOptionPane.OK_CANCEL_OPTION);
 						System.out.println("上传失败!");
 						ioE.printStackTrace();
 						return;
@@ -171,7 +179,7 @@ public class Operator extends AbstractUser {
 						}
 					} catch (IOException | ClassNotFoundException exception) {
 						System.out.println("文件上传失败，请检查文件是否损坏！");
-						JOptionPane.showConfirmDialog(bottonYes,"上传失败，请检查文件是否损坏！","警告",JOptionPane.OK_CANCEL_OPTION);
+						JOptionPane.showConfirmDialog(buttonYes,"上传失败，请检查文件是否损坏！","警告",JOptionPane.OK_CANCEL_OPTION);
 						return;
 					}
 
@@ -187,12 +195,23 @@ public class Operator extends AbstractUser {
 					}
 
 					System.out.println("upload file is successful");
-					JOptionPane.showConfirmDialog(bottonYes,"upload file is successful！","警告",JOptionPane.OK_CANCEL_OPTION);
+					JOptionPane.showConfirmDialog(buttonYes,"upload file is successful！","警告",JOptionPane.OK_CANCEL_OPTION);
 					break;
 				default:
 					break;
 			}
 		});
 		return false;
+	}
+
+	public static void main(String[] args) {
+		JFrame frame = new JFrame();
+		frame.setSize(400,400);
+		JPanel panel = new JPanel();
+		Operator operator = new Operator("hhh","123","operator");
+		operator.uploadFile(panel);
+		frame.add(panel);
+
+		frame.setVisible(true);
 	}
 }

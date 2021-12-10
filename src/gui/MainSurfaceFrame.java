@@ -4,6 +4,7 @@ import adduserclass.AbstractUser;
 import dataprocessing.DataProcessing;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +44,7 @@ public class MainSurfaceFrame extends JFrame {
         /**
          * 设置框架的标题
          */
-        setTitle("欢迎进入档案系统登录界面");
+        setTitle("系统登录");
 
         /**
          * 设置组件
@@ -56,23 +57,36 @@ public class MainSurfaceFrame extends JFrame {
         /**
          * 注意要new BorderLayout()，否者默认流布局
          */
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(new GridLayout(0,1));
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+        JPanel panel3 = new JPanel();
         userNameTextField = new JTextField("",columnsSize);
         passwordField = new JPasswordField("",columnsSize);
         /**
          * 创建标签组件,并将组件加入panel面板中,注意标签与主页要靠近
          */
         /*,JLabel.RIGHT,BorderLayout.NORTH*/
+
         JLabel userNameLabel = new JLabel("用户名:");
-        panel.add(userNameLabel);
-        panel.add(userNameTextField);
-        JLabel passwordLabel = new JLabel("密码:");
-        panel.add(passwordLabel);
-        panel.add(passwordField);
+
+        panel1.add(userNameLabel);
+        panel1.add(userNameTextField);
+        JLabel passwordLabel = new JLabel("    密码:");
+        panel2.add(passwordLabel);
+        panel2.add(passwordField);
 
         loginButton = new JButton("登录");
-        panel.add(loginButton);
+        panel3.add(loginButton);
+
+        panel.add(new JPanel());
+        panel.add(panel1);
+        panel.add(panel2);
+        panel.add(panel3);
+        panel.add(new JPanel());
         add(panel);
+        pack();
+//        add(panel,BorderLayout.CENTER);
         /**
          * 布局边框
          */
@@ -122,6 +136,12 @@ public class MainSurfaceFrame extends JFrame {
 
 
         }
+    }
+
+    public static void main(String[] args) {
+        MainSurfaceFrame surfaceFrame = new MainSurfaceFrame();
+        surfaceFrame.addAllComponent();
+        surfaceFrame.setVisible(true);
     }
 }
 
