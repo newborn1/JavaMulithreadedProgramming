@@ -49,7 +49,7 @@ public class MainSurfaceFrame extends JFrame {
         /**
          * ÉèÖÃ×é¼ş
          */
-
+        addAllComponent();
     }
 
     public void addAllComponent(){
