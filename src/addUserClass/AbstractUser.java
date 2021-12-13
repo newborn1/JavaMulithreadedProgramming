@@ -195,10 +195,11 @@ public abstract class AbstractUser {
 					/**
 					 * 获得JTable组件
 					 */
-					int count = panel.getComponentCount();
+					JPanel tempPanel = (JPanel) panel.getComponent(0);
+					int count = tempPanel.getComponentCount();
 					JTable tableData = null;
 					for(int i = 0;i < count;i++) {
-						Object component = panel.getComponent(i);
+						Object component = tempPanel.getComponent(i);
 						if(component instanceof JScrollPane) {
 							JScrollPane scrollPane = ((JScrollPane) component);
 							tableData = (JTable) scrollPane.getViewport().getComponent(0);
@@ -246,6 +247,7 @@ public abstract class AbstractUser {
 						ioE.printStackTrace();
 						return;
 					}
+					JOptionPane.showConfirmDialog(buttonYes, "下载成功!", "提示", JOptionPane.OK_CANCEL_OPTION);
 					System.out.println("下载成功");
 					break;
 				default:
