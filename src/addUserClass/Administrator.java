@@ -1,6 +1,7 @@
 package adduserclass;
 
 import java.awt.*;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -105,15 +106,22 @@ public class Administrator extends AbstractUser {
 		Label nameLabel = new Label("用户名");
 		JComboBox nameBox = new JComboBox();
 		nameBox.addItem(null);
-		Enumeration<AbstractUser> allUsers = null;
+		ResultSet allUsers = null;
 		try {
 			allUsers = DataProcessing.listUser();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		//遍历获得所有的用户
-		while(allUsers.hasMoreElements()){
-			AbstractUser user = allUsers.nextElement();
+		while(true){
+			try {
+				if (!allUsers.next()) {
+					break;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			AbstractUser user = DataProcessing.newUser(allUsers);
 			nameBox.addItem(user.getName());
 		}
 
@@ -285,11 +293,11 @@ public class Administrator extends AbstractUser {
 	public boolean listAbstractUser(JPanel panel){
 		Object[][] tableData = new Object[100][5];
 		try {
-			Enumeration<AbstractUser> users = DataProcessing.listUser();
+			ResultSet users = DataProcessing.listUser();
 			AbstractUser user = null;
 			int index = 0;
-			while(users.hasMoreElements()){
-				user = users.nextElement();
+			while(users.next()){
+				user = DataProcessing.newUser(users);
 
 				tableData[index][0] = user.getName();
 				tableData[index][1] = user.getPassword();
@@ -320,15 +328,22 @@ public class Administrator extends AbstractUser {
 	}
 
 	public boolean listAbstractUser() {
-		Enumeration<AbstractUser> e = null;
+		ResultSet e = null;
 		try{
 			e = DataProcessing.listUser();
 		}catch (SQLException sqlE){
 			System.out.println(sqlE.getMessage());
 			return false;
 		}
-		while(e.hasMoreElements()) {
-			System.out.println(e.nextElement());
+		while(true) {
+			try {
+				if (!e.next()) {
+					break;
+				}
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			System.out.println(DataProcessing.newUser(e));
 		}
 		return true;
 	}

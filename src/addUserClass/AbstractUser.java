@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.io.File;
@@ -264,11 +265,11 @@ public abstract class AbstractUser {
 	public void showFileList(JPanel panel){
 		Object[][] tableData = new Object[100][5];
 		try {
-			Enumeration<Doc> document = DataProcessing.listDoc();
+			ResultSet document = DataProcessing.listDoc();
 			Doc doc = null;
 			int index = 0;
-			while(document.hasMoreElements()){
-				doc = document.nextElement();
+			while(document.next()){
+				doc = DataProcessing.newDoc(document);
 
 				tableData[index][0] = doc.getId();
 				tableData[index][1] = doc.getCreator();
@@ -311,9 +312,9 @@ public abstract class AbstractUser {
 			throw new SQLException("Error in accessing file DB");
 		}
 		System.out.println("...........Document list...........");
-		Enumeration<Doc> document = DataProcessing.listDoc();
-		while(document.hasMoreElements()){
-			System.out.println(document.nextElement());
+		ResultSet document = DataProcessing.listDoc();
+		while(document.next()){
+			System.out.println(DataProcessing.newDoc(document));
 		}
 	}
 	
