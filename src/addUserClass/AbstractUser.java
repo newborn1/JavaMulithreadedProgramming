@@ -117,7 +117,7 @@ public abstract class AbstractUser {
 					System.out.println("ÃÜÂë´íÎó");
 					return;
 				}
-				newPassword = passwordNewField.getPassword().toString();
+				newPassword = new String(passwordNewField.getPassword());
 				if (!DataProcessing.updateUser(this.getName(), newPassword, this.getRole())) {
 					return;
 				}
