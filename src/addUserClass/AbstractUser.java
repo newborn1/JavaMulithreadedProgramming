@@ -57,7 +57,6 @@ public abstract class AbstractUser {
 	 */
 	public boolean changeSelfInfo(JPanel panel){
 		/**
-		 * TODO 修改密码后不能登录
 		 * 添加用户名，密码，角色，按钮组件并绑定确定按钮
 		 */
 		panel.setLayout(new GridLayout(0,1));
@@ -301,7 +300,6 @@ public abstract class AbstractUser {
 	}
 	/**
 	 * 档案查询:实现按条件查询相应的档案文件信息，也可简化为展示所有档案文件信息.在未涉及数据库之前，档案信息存放在Hashtable中
-	 * TODO 按条件查询相应的档案文件信息
 	 *
 	 * @param
 	 * @return void
