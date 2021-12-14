@@ -161,8 +161,8 @@ public class Administrator extends AbstractUser {
 		JPanel panel4 = new JPanel();
 		JButton buttonYes  = new JButton("确定");
 		JButton buttonNo = new JButton("取消");
-		panel4.add(buttonNo);
 		panel4.add(buttonYes);
+		panel4.add(buttonNo);
 		panel.add(panel4);
 		panel.add(new JPanel());
 		buttonYes.addActionListener(actionEvent -> {
@@ -296,13 +296,14 @@ public class Administrator extends AbstractUser {
 
 			try {
 				DataProcessing.insertUser(name, password, role);
+				JOptionPane.showConfirmDialog(buttonYes,"增加用户成功","提醒",JOptionPane.OK_CANCEL_OPTION);
 			} catch (SQLException sqlE) {
 				/**
 				 * TODO 有bug,解决:有再抛出异常给父框架处理
 				 */
 				System.out.println(sqlE.getMessage());
 				System.out.println("Please do it against.");
-				JOptionPane.showConfirmDialog(buttonYes,"Please do it against.","警告",JOptionPane.OK_CANCEL_OPTION);
+				JOptionPane.showConfirmDialog(buttonYes,"增加失败,请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
 				if (NotConnectedToDatabase.equals(sqlE.getMessage())) {
 					DataProcessing.init();
 				}
@@ -311,8 +312,6 @@ public class Administrator extends AbstractUser {
 			nameField.setText("");
 			passwordField.setText("");
 			roleBox.setSelectedIndex(0);
-			JOptionPane.showConfirmDialog(buttonYes,"增加用户成功","提醒",JOptionPane.OK_CANCEL_OPTION);
-
 		});
 
 		return true;

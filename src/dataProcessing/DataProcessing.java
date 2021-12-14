@@ -282,19 +282,7 @@ public class DataProcessing {
 	public static boolean updateUser(String name, String password, String role) throws SQLException{
 		AbstractUser user;
 		String sql = "UPDATE user_info SET username='"+name+"', password='"+password+"',role='"+role+"' WHERE username='"+name+"'";
-		if(statement.executeUpdate(sql)==0){
-		/*if (users.containsKey(name)) {
-			switch(ROLE_ENUM.valueOf(role.toLowerCase())) {
-				case administrator:
-					user = new Administrator(name,password, role);
-					break;
-				case operator:
-					user = new Operator(name,password, role);
-					break;
-				default:
-					user = new Browser(name,password, role);
-			}
-			users.put(name, user);*/
+		if(statement.executeUpdate(sql)!=0){
 			return true;
 		}else {
 			return false;
@@ -362,28 +350,12 @@ public class DataProcessing {
 	 * @throws SQLException
 	 */
 	public static boolean insertUser(String name, String password, String role) throws SQLException{
-		String sql = "INSERT INTO user_info(name,password,role) VALUES ('" + name +"','" +password+"','"+role+"')";
+		String sql = "INSERT INTO user_info(username,password,role) VALUES ('" + name +"','" +password+"','"+role+"')";
 		int status = statement.executeUpdate(sql);
 		if(status != 1){
 			return false;
 		}
-//		AbstractUser user;
-//		if (users.containsKey(name)) {
-//			return false;
-//		}else{
-//			switch(ROLE_ENUM.valueOf(role.toLowerCase())) {
-//				case administrator:
-//					user = new Administrator(name,password, role);
-//					break;
-//				case operator:
-//					user = new Operator(name,password, role);
-//					break;
-//				default:
-//					user = new Browser(name,password, role);
-//			}
-//			users.put(name, user);
-			return true;
-//		}
+		return true;
 	}
 
 	/**
