@@ -58,7 +58,6 @@ public abstract class AbstractUser {
 	 */
 	public boolean changeSelfInfo(JPanel panel){
 		/**
-		 * TODO 修改密码后不能登录
 		 * 添加用户名，密码，角色，按钮组件并绑定确定按钮
 		 */
 		panel.setLayout(new GridLayout(0,1));
@@ -118,7 +117,7 @@ public abstract class AbstractUser {
 					System.out.println("密码错误");
 					return;
 				}
-				newPassword = passwordNewField.getPassword().toString();
+				newPassword = new String(passwordNewField.getPassword());
 				if (!DataProcessing.updateUser(this.getName(), newPassword, this.getRole())) {
 					return;
 				}
@@ -196,10 +195,11 @@ public abstract class AbstractUser {
 					/**
 					 * 获得JTable组件
 					 */
-					int count = panel.getComponentCount();
+					JPanel tempPanel = (JPanel) panel.getComponent(0);
+					int count = tempPanel.getComponentCount();
 					JTable tableData = null;
 					for(int i = 0;i < count;i++) {
-						Object component = panel.getComponent(i);
+						Object component = tempPanel.getComponent(i);
 						if(component instanceof JScrollPane) {
 							JScrollPane scrollPane = ((JScrollPane) component);
 							tableData = (JTable) scrollPane.getViewport().getComponent(0);
@@ -247,6 +247,7 @@ public abstract class AbstractUser {
 						ioE.printStackTrace();
 						return;
 					}
+					JOptionPane.showConfirmDialog(buttonYes, "下载成功!", "提示", JOptionPane.OK_CANCEL_OPTION);
 					System.out.println("下载成功");
 					break;
 				default:
@@ -300,7 +301,6 @@ public abstract class AbstractUser {
 	}
 	/**
 	 * 档案查询:实现按条件查询相应的档案文件信息，也可简化为展示所有档案文件信息.在未涉及数据库之前，档案信息存放在Hashtable中
-	 * TODO 按条件查询相应的档案文件信息
 	 *
 	 * @param
 	 * @return void

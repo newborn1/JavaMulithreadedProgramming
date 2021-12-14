@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+import com.sun.org.apache.xpath.internal.XPathAPI;
 import dataprocessing.Doc;
 import gui.AdministratorFrame;
 import dataprocessing.DataProcessing;
@@ -103,6 +104,8 @@ public class Administrator extends AbstractUser {
 	 * @throws SQLException
 	 */
 	public void changeUserInfo(JPanel panel) {
+		panel.setLayout(new GridLayout(0,1));
+		panel.add(new JPanel());
 		Label nameLabel = new Label("用户名");
 		JComboBox nameBox = new JComboBox();
 		nameBox.addItem(null);
@@ -126,30 +129,42 @@ public class Administrator extends AbstractUser {
 		}
 
 
-		panel.add(nameBox);
-
-		panel.add(nameLabel);
-		panel.add(nameBox);
+		JPanel panel1 = new JPanel();
+		panel1.add(nameLabel);
+		panel1.add(nameBox);
+		panel.add(panel1);
+		JPanel panel2 = new JPanel();
 		Label passwordNewLabel = new Label("密码");
 		JPasswordField passwordNewField = new JPasswordField(20);
-		panel.add(passwordNewLabel);
-		panel.add(passwordNewField);
+		panel2.add(passwordNewLabel);
+		panel2.add(passwordNewField);
+		panel.add(panel2);
+		JPanel panel3 = new JPanel();
 		Label roleLabel = new Label("身份");
 		JComboBox roleBox = new JComboBox();
 		roleBox.addItem("administrator");
 		roleBox.addItem("browser");
 		roleBox.addItem("operator");
 
-		panel.add(roleBox);
-		panel.add(roleLabel);
-		panel.add(roleBox);
+		/**
+		 * TODO 优化显示
+		 */
+		if(nameBox.getSelectedIndex()!=0){
+			roleBox.setSelectedIndex(0);
+		}
+		panel3.add(roleLabel);
+		panel3.add(roleBox);
+		panel.add(panel3);
 		/**
 		 * 每次都要new一个，不然只能显示最后一个
 		 */
+		JPanel panel4 = new JPanel();
 		JButton buttonYes  = new JButton("确定");
 		JButton buttonNo = new JButton("取消");
-		panel.add(buttonNo);
-		panel.add(buttonYes);
+		panel4.add(buttonNo);
+		panel4.add(buttonYes);
+		panel.add(panel4);
+		panel.add(new JPanel());
 		buttonYes.addActionListener(actionEvent -> {
 				try {
 					String name, password, role;
@@ -157,7 +172,7 @@ public class Administrator extends AbstractUser {
 					System.out.print("请输入更新的用户名:");
 					name = nameBox.getSelectedItem().toString();
 					System.out.print("请输入更新的密码:");
-					password = passwordNewField.getPassword().toString();
+					password = new String(passwordNewField.getPassword());
 					System.out.print("请输入更新的角色:");
 					role = roleBox.getSelectedItem().toString();
 
@@ -173,42 +188,35 @@ public class Administrator extends AbstractUser {
 						DataProcessing.init();
 					}
 				}
+				nameBox.setSelectedIndex(0);
+				passwordNewField.setText("");
+				roleBox.setSelectedIndex(0);
+				JOptionPane.showConfirmDialog(buttonYes,"修改!","提示",JOptionPane.OK_CANCEL_OPTION);
 		});
 
 	}
 	
 	public boolean delAbstractUser(JPanel panel) throws NullPointerException{
-		listAbstractUser(panel);
-		/*Label nameLabel = new Label("用户名");
-		JComboBox nameBox = new JComboBox();
-		nameBox.addItem(null);
-		Enumeration<AbstractUser> allUsers = null;
-		try {
-			allUsers = DataProcessing.listUser();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		//遍历获得所有的用户
-		while(allUsers.hasMoreElements()){
-			AbstractUser user = allUsers.nextElement();
-			nameBox.addItem(user.getName());
-		}
-
-		panel.add(nameLabel);
-		panel.add(nameBox);*/
+		panel.setLayout(new BorderLayout());
+		JPanel panel1 = new JPanel();
+		listAbstractUser(panel1);
+		panel.add(panel1,BorderLayout.CENTER);
+		JPanel panel2 = new JPanel();
 		JButton buttonYes = new JButton("确定");
 		JButton buttonNo = new JButton("取消");
-		panel.add(buttonYes);
-		panel.add(buttonNo);
+		panel2.add(buttonYes);
+		panel2.add(buttonNo);
+		panel.add(panel2,BorderLayout.SOUTH);
 
 		buttonYes.addActionListener(actionListener -> {
 			/**
 			 * 获得JTable组件
 			 */
-			int count = panel.getComponentCount();
+			JPanel getPanel = (JPanel) panel.getComponent(0);
+			int count = getPanel.getComponentCount();
 			JTable tableData = null;
 			for(int i = 0;i < count;i++) {
-				Object component = panel.getComponent(i);
+				Object component = getPanel.getComponent(i);
 				if(component instanceof JScrollPane) {
 					JScrollPane scrollPane = ((JScrollPane) component);
 					tableData = (JTable) scrollPane.getViewport().getComponent(0);
@@ -217,11 +225,14 @@ public class Administrator extends AbstractUser {
 			int selectedRow = tableData.getSelectedRow();
 
 			System.out.print("请输入将删除的用户名：");
-			JOptionPane.showConfirmDialog(buttonYes,"请输入将删除的用户名：","警告",JOptionPane.OK_CANCEL_OPTION);
+			JOptionPane.showConfirmDialog(buttonYes,"删除用户成功","警告",JOptionPane.OK_CANCEL_OPTION);
 			String name = tableData.getValueAt(selectedRow, 0).toString();
 			try {
 				DataProcessing.deleteUser(name);
 			}catch (SQLException sqlE){
+				/**
+				 * TODO 有bug
+				 */
 				System.out.println(sqlE.getMessage());
 				System.out.println("Please do it against.");
 				JOptionPane.showConfirmDialog(buttonYes,"Please do it against.","警告",JOptionPane.OK_CANCEL_OPTION);
@@ -240,24 +251,36 @@ public class Administrator extends AbstractUser {
 	}
 	
 	public boolean addAbstractUser(JPanel panel) {
+		panel.setLayout(new GridLayout(0,1));
+		panel.add(new JPanel());
+		JPanel panel1 = new JPanel();
 		Label nameLabel = new Label("用户名");
 		JTextField nameField = new JTextField("",20);
-		panel.add(nameLabel);
-		panel.add(nameField);
+		panel1.add(nameLabel);
+		panel1.add(nameField);
+		panel.add(panel1);
 		Label passwordLabel = new Label("密码");
 		JPasswordField passwordField = new JPasswordField("",20);
-		panel.add(passwordLabel);
-		panel.add(passwordField);
+		JPanel panel2 = new JPanel();
+		panel2.add(passwordLabel);
+		panel2.add(passwordField);
+		panel.add(panel2);
 		Label roleLabel = new Label("身份");
 		JComboBox roleBox = new JComboBox();
-		roleBox.addItem(null);
-		roleBox.addItem(this.getRole());
-		panel.add(roleLabel);
-		panel.add(roleBox);
+		roleBox.addItem("browser");
+		roleBox.addItem("operator");
+		roleBox.addItem("administrator");
+		JPanel panel3 = new JPanel();
+		panel3.add(roleLabel);
+		panel3.add(roleBox);
+		panel.add(panel3);
 		JButton buttonYes = new JButton("确定");
 		JButton buttonNo = new JButton("取消");
-		panel.add(buttonYes);
-		panel.add(buttonNo);
+		JPanel panel4 = new JPanel();
+		panel4.add(buttonYes);
+		panel4.add(buttonNo);
+		panel.add(panel4);
+		panel.add(new JPanel());
 
 		buttonYes.addActionListener(actionListener -> {
 			String role = "";
@@ -265,18 +288,18 @@ public class Administrator extends AbstractUser {
 			String name = "";
 
 			System.out.print("请输入名字：");
-//			name = in.next();
 			name = nameField.getText();
 			System.out.print("请输入密码：");
-//			password = in.next();
-			password = passwordField.getPassword().toString();
+			password = new String(passwordField.getPassword());
 			System.out.print("请输入角色：");
-//			role = in.next();
 			role = roleBox.getSelectedItem().toString();
 
 			try {
 				DataProcessing.insertUser(name, password, role);
 			} catch (SQLException sqlE) {
+				/**
+				 * TODO 有bug,解决:有再抛出异常给父框架处理
+				 */
 				System.out.println(sqlE.getMessage());
 				System.out.println("Please do it against.");
 				JOptionPane.showConfirmDialog(buttonYes,"Please do it against.","警告",JOptionPane.OK_CANCEL_OPTION);
@@ -284,6 +307,11 @@ public class Administrator extends AbstractUser {
 					DataProcessing.init();
 				}
 			}
+			//将内容恢复,增加安全
+			nameField.setText("");
+			passwordField.setText("");
+			roleBox.setSelectedIndex(0);
+			JOptionPane.showConfirmDialog(buttonYes,"增加用户成功","提醒",JOptionPane.OK_CANCEL_OPTION);
 
 		});
 
@@ -318,11 +346,11 @@ public class Administrator extends AbstractUser {
 			System.out.println(e.getMessage());
 			System.out.println("The problem has been solved.Please input the selector against.");
 			/**
-			 * TODO 这里的buttonYes能不能换成panel,为什么
+			 * TODO 这里的buttonYes能不能换成panel,为什么。这里也不能把注释的语句加进去。
 			 */
-			JOptionPane.showConfirmDialog(panel,"The problem has been solved.Please input the selector against.","警告",JOptionPane.OK_CANCEL_OPTION);
+//			JOptionPane.showConfirmDialog(new Button(),"The problem has been solved.Please input the selector against.","警告",JOptionPane.OK_CANCEL_OPTION);
 			System.out.println("请重新输入!");
-			JOptionPane.showConfirmDialog(panel,"请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
+//			JOptionPane.showConfirmDialog(new Button(),"请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
 		}
 		return true;
 	}
