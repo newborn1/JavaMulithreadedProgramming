@@ -38,8 +38,6 @@ public class FileSystem {
 		 */
 		JFrame loginFrame = new MainSurfaceFrame();
 		loginFrame.setVisible(true);
-//		((MainSurfaceFrame) loginFrame).addAllComponent();
-
 
 		String lineOne = "*******************欢迎进入档案系统**********************\n";
 		String lineTwo = "\t\t\t  1、登录\n";
