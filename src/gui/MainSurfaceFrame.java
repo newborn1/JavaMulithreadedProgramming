@@ -1,13 +1,11 @@
 package gui;
 
 import adduserclass.AbstractUser;
+import clientapi.Client;
 import dataprocessing.DataProcessing;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 
@@ -22,7 +20,7 @@ public class MainSurfaceFrame extends JFrame {
     private JPasswordField passwordField;
     private JButton loginButton;
 
-    public MainSurfaceFrame(){
+    public MainSurfaceFrame(Client client){
         /**
          * 设置开始菜单的界面长、宽、位置和图标
          */
@@ -50,6 +48,44 @@ public class MainSurfaceFrame extends JFrame {
          * 设置组件
          */
         addAllComponent();
+
+        loginButton.addActionListener(actionEvent -> {
+            String name = "";
+            String password = "";
+            AbstractUser u = null;
+            name = userNameTextField.getText() ;
+            password = new String(passwordField.getPassword());
+
+            while (true) {
+                try {
+                    while (DataProcessing.searchUser(name) == null) {
+                        JOptionPane.showConfirmDialog(loginButton,"不存在该用户！请重新输入。","警告",JOptionPane.OK_CANCEL_OPTION);
+                        System.out.println("不存在该用户。");
+                        return;
+                    }
+
+                    u = DataProcessing.searchUser(name, password);
+                    u.setClient(client);
+
+                    if (u == null) {
+                        JOptionPane.showConfirmDialog(loginButton,"密码错误!","警告",JOptionPane.OK_CANCEL_OPTION);
+                        System.out.println("密码错误!");
+                        return;
+                    }else{
+                        break;
+                    }
+                } catch (SQLException e) {
+                    if ("Not Connected to Database".equals(e.getMessage())) {
+                        DataProcessing.init();
+                    }
+                    JOptionPane.showConfirmDialog(loginButton,"请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
+                    System.out.println("请重新输入!");
+                    return;
+                }
+            }
+            u.showMenu();
+
+        });
     }
 
     public void addAllComponent(){
@@ -66,7 +102,6 @@ public class MainSurfaceFrame extends JFrame {
         /**
          * 创建标签组件,并将组件加入panel面板中,注意标签与主页要靠近
          */
-        /*,JLabel.RIGHT,BorderLayout.NORTH*/
 
         JLabel userNameLabel = new JLabel("用户名:");
 
@@ -91,55 +126,14 @@ public class MainSurfaceFrame extends JFrame {
          * 布局边框
          */
 
-        loginButton.addActionListener(new ButtonActionOperator());
         /**
          * 退出函数已关闭原窗口
          */
     }
-    class ButtonActionOperator implements ActionListener{
-        @Override
-        public void actionPerformed(ActionEvent event){
-            String name = "";
-            String password = "";
-            AbstractUser u = null;
-            name = userNameTextField.getText() ;
-            password = new String(passwordField.getPassword());
 
-            while (true) {
-                try {
-                    while (DataProcessing.searchUser(name) == null) {
-                        JOptionPane.showConfirmDialog(loginButton,"不存在该用户！请重新输入。","警告",JOptionPane.OK_CANCEL_OPTION);
-                        System.out.println("不存在该用户。");
-                        return;
-                    }
-
-                    u = DataProcessing.searchUser(name, password);
-
-                    if (u == null) {
-                        JOptionPane.showConfirmDialog(loginButton,"密码错误!","警告",JOptionPane.OK_CANCEL_OPTION);
-                        System.out.println("密码错误!");
-                        return;
-                    }else{
-                        break;
-                    }
-                } catch (SQLException e) {
-                    if ("Not Connected to Database".equals(e.getMessage())) {
-                        DataProcessing.init();
-                    }
-                    JOptionPane.showConfirmDialog(loginButton,"请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
-                    System.out.println("请重新输入!");
-                    return;
-                }
-            }
-
-            u.showMenu();
-
-
-        }
-    }
 
     public static void main(String[] args) {
-        MainSurfaceFrame surfaceFrame = new MainSurfaceFrame();
+        MainSurfaceFrame surfaceFrame = new MainSurfaceFrame(null);
         surfaceFrame.addAllComponent();
         surfaceFrame.setVisible(true);
     }

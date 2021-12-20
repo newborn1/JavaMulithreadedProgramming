@@ -3,6 +3,7 @@ package filesystem;
 import java.sql.SQLException;
 import java.util.*;
 
+import clientapi.Client;
 import gui.MainSurfaceFrame;
 import adduserclass.*;
 import dataprocessing.*;
@@ -32,12 +33,11 @@ public class FileSystem {
 	 * 
 	 * @param
 	 */
-	public static void showMainUserSurface() {
+	public static void showMainUserSurface(Client client) {
 		/**
 		 * GUI
 		 */
-		JFrame loginFrame = new MainSurfaceFrame();
-		loginFrame.setVisible(true);
+		new MainSurfaceFrame(client);
 
 		String lineOne = "*******************欢迎进入档案系统**********************\n";
 		String lineTwo = "\t\t\t  1、登录\n";
@@ -52,13 +52,6 @@ public class FileSystem {
 
 		System.out.print("请输入数字选择:");
 		Integer selection = FileSystem.EXIT_SYSTEM;
-//		selection = in.nextInt();
-//		if (selection.equals(FileSystem.EXIT_SYSTEM)) {
-//			filesystem.FileSystem.in.close();
-//			System.out.println("已退出系统");
-//			System.exit(0);
-//			return;
-//		}
 	}
 
 	public static AbstractUser verifyUser() {

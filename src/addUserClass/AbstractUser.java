@@ -1,23 +1,20 @@
 package adduserclass;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.io.File;
 import java.io.IOException;
 
+import clientapi.Client;
 import dataprocessing.DataProcessing;
 import dataprocessing.Doc;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 
 import static filesystem.FileSystem.NotConnectedToDatabase;
 
@@ -32,22 +29,27 @@ public abstract class AbstractUser {
 	private String name;
 	private String password;
 	private String role;
+	private Client client;
 	static final double EXCEPTION_PROBABILITY=0.9;
 
 	private JButton buttonYes = new JButton("确定");
 	private JButton buttonNo = new JButton("取消");
 
-	AbstractUser(String name,String password,String role){
+	AbstractUser(String name, String password, String role){
 		this.name=name;
 		this.password=password;
-		this.role=role;				
+		this.role=role;
+	}
+	public void setClient(Client client){
+		this.client = client;
 	}
 	
 	@Override
 	public String toString(){
 		return  "name = " + name
 				+"password = " + password
-				+",role = " + role;
+				+",role = " + role
+				+",client = " + client;
 	}
 
 	/**
@@ -162,6 +164,8 @@ public abstract class AbstractUser {
 	public abstract void showMenu();
 
 	/**
+	 * TODO 将文件从网络上下载，而不是从本地下载：即将下载来源改为服务端
+	 *
 	 * 档案下载:根据档案号在哈希表中查找得到文件信息，在未涉及网络之前，只需实现在单机上将对应文件拷贝至指定目录中
 	 *
 	 * @return
@@ -230,7 +234,10 @@ public abstract class AbstractUser {
 					} catch (IOException ioE) {
 
 					}
-
+					/**
+					 * TODO 改为网络传输：即将下载时改为从服务端读取,并且需要把这部分代码放在server，这里要改为从server获得,原来的也需要改
+					 * 文件类与文件内容不一样
+					 */
 					try {
 						if (!file.createNewFile()) {
 							JOptionPane.showConfirmDialog(buttonYes, "该文件已下载到本地，请勿重复下载!", "警告", JOptionPane.OK_CANCEL_OPTION);
@@ -238,7 +245,8 @@ public abstract class AbstractUser {
 							return;
 						} else {
 							try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
-								out.writeObject(doc);
+								client.processConnection(out);
+								out.writeObject("这是文件的内容"+doc);
 							}
 						}
 					} catch (IOException ioE) {
@@ -355,5 +363,9 @@ public abstract class AbstractUser {
 
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public Client getClient(){
+		return client;
 	}
 }

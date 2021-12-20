@@ -1,9 +1,7 @@
 package dataprocessing;
 
 import adduserclass.*;
-import com.sun.deploy.config.Config;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.sql.*;
 import java.util.logging.Logger;

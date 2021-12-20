@@ -1,5 +1,6 @@
 package adduserclass;
 
+import clientapi.Client;
 import gui.OperatorFrame;
 import dataprocessing.DataProcessing;
 import dataprocessing.Doc;
@@ -89,6 +90,7 @@ public class Operator extends AbstractUser {
 	/**
 	 * 档案上传:输入新的档案文件属性信息，保存至Hashtable中，并将档案文件拷贝至指定目录中
 	 * TODO 将文档保存方式改变一下，并且进行上传有效性验证
+	 * TODO 将上传文件的去向变为服务端，而不是本地
 	 *
 	 * @return boolean
 	 */
@@ -157,7 +159,7 @@ public class Operator extends AbstractUser {
 					} catch (IOException ioe) {
 
 					}
-					File files = new File(FileSystem.REMOTE_PATH + "\\" + filenames[filenames.length - 1]);
+/**					File files = new File(FileSystem.REMOTE_PATH + "\\" + filenames[filenames.length - 1]);
 					Doc doc = null;
 					try {
 						if (!files.createNewFile()) {
@@ -171,18 +173,20 @@ public class Operator extends AbstractUser {
 						ioE.printStackTrace();
 						return;
 					}
+					/**
+					 * TODO 将out.writeObject改为向网络输出即可
+					 *//*
 					try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(files))) {
 						try (ObjectInputStream oin = new ObjectInputStream(filestream)) {
 							//将文档保存到HashTable和指定目录中上传失败
-							doc = (Doc) oin.readObject();
-							out.writeObject(doc);
+							getClient().sendFile(oin,filenames[filenames.length - 1]);
 						}
 					} catch (IOException | ClassNotFoundException exception) {
 						System.out.println("文件上传失败，请检查文件是否损坏！");
 						JOptionPane.showConfirmDialog(buttonYes,"上传失败，请检查文件是否损坏！","警告",JOptionPane.OK_CANCEL_OPTION);
 						return;
 					}
-
+*/
 					Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 					while (true) {

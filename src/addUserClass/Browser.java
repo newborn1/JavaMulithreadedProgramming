@@ -1,5 +1,6 @@
 package adduserclass;
 
+import clientapi.Client;
 import gui.BrowserFrame;
 
 import javax.swing.*;
@@ -13,9 +14,9 @@ import java.sql.SQLException;
  */
 public class Browser extends AbstractUser {
 
-	public Browser(String name,String password,String role) {
+	public Browser(String name, String password, String role) {
 		//调用的构造器只能是本类的构造器。如何初始化父类的：用super
-		super(name, password, role);
+		super(name, password, role );
 	}
 	
 	@Override

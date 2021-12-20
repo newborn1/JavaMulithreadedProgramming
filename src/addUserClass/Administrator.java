@@ -3,10 +3,8 @@ package adduserclass;
 import java.awt.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
 
-import com.sun.org.apache.xpath.internal.XPathAPI;
-import dataprocessing.Doc;
+import clientapi.Client;
 import gui.AdministratorFrame;
 import dataprocessing.DataProcessing;
 
@@ -21,7 +19,7 @@ import static filesystem.FileSystem.NotConnectedToDatabase;
  * @data 2021/11/19
  */
 public class Administrator extends AbstractUser {
-	public Administrator(String name,String password,String role) {
+	public Administrator(String name, String password, String role) {
 		super(name,password,role);
 	}
 	@Override
@@ -79,9 +77,6 @@ public class Administrator extends AbstractUser {
 				 * 这个可以另外判断
 				 */
 				this.changeUserInfo(null);
-//				while(!this.changeUserInfo(null)){
-//					System.out.println("输入错误！请重新处理。");
-//				}
 				break;
 			case 5:
 				this.delAbstractUser(null);break;
