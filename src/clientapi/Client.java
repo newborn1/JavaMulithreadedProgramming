@@ -1,14 +1,14 @@
 package clientapi;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -173,11 +173,18 @@ public class Client extends JFrame
     } // end method closeConnection
 
     public void sendFile(ObjectInputStream oin,String filename) throws IOException,ClassNotFoundException{
+
         output.writeObject("CLIENT>>> UPLOAD");
         output.writeObject(filename);
         output.writeObject(oin.readObject());
         /*只需要一次性flush吗*/
         output.flush();
+    }
+    public void getFile(String filename) throws IOException,ClassNotFoundException{
+        sendData("CLIENT>>> DOWNLOAD");
+        output.writeObject(filename);
+        output.flush();
+        out.writeObject(input.readObject());
     }
 
     /**

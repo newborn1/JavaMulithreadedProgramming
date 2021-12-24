@@ -245,8 +245,8 @@ public abstract class AbstractUser {
 							return;
 						} else {
 							try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
-								client.processConnection(out);
-								out.writeObject("这是文件的内容"+doc);
+								client.getFile(doc.getFilename());
+//								out.writeObject("这是文件的内容"+doc);
 							}
 						}
 					} catch (IOException ioE) {
@@ -291,7 +291,6 @@ public abstract class AbstractUser {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 		String[] tableName = {"档案号","创建者","时间","文件名","描述"};
 		JTable fileTable = new JTable(tableData,tableName);
 		panel.add(new JScrollPane(fileTable));

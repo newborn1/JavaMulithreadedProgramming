@@ -159,8 +159,6 @@ public class Operator extends AbstractUser {
 					} catch (IOException ioe) {
 
 					}
-/**					File files = new File(FileSystem.REMOTE_PATH + "\\" + filenames[filenames.length - 1]);
-					Doc doc = null;
 					try {
 						if (!files.createNewFile()) {
 							JOptionPane.showConfirmDialog(buttonYes,"该文件已上传，请勿重复上传！","警告",JOptionPane.OK_CANCEL_OPTION);
@@ -175,7 +173,7 @@ public class Operator extends AbstractUser {
 					}
 					/**
 					 * TODO 将out.writeObject改为向网络输出即可
-					 *//*
+					 */
 					try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(files))) {
 						try (ObjectInputStream oin = new ObjectInputStream(filestream)) {
 							//将文档保存到HashTable和指定目录中上传失败
@@ -186,7 +184,7 @@ public class Operator extends AbstractUser {
 						JOptionPane.showConfirmDialog(buttonYes,"上传失败，请检查文件是否损坏！","警告",JOptionPane.OK_CANCEL_OPTION);
 						return;
 					}
-*/
+
 					Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 					while (true) {

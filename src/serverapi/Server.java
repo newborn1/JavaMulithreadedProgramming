@@ -152,8 +152,24 @@ public class Server extends JFrame
             Files.createFile(Paths.get(FileSystem.REMOTE_PATH));
         } catch (IOException e) {}
         File files = new File(FileSystem.REMOTE_PATH + "\\"+filename);
-        if(!files.createNewFile()){
-            throw new IOException("文件已上传");
+        try {
+            if (!files.createNewFile()) {
+                throw new IOException("文件已上传");
+            }
+        }catch (IOException ioE){
+            throw new IOException("上传失败");
+        }
+    }
+    public void sendFile(String filename){
+        File files = new File(FileSystem.REMOTE_PATH+"\\"+filename);
+        /*将内容写入*/
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(files);
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            output.writeObject(objectOutputStream);
+            output.flush();
+        } catch (IOException e) {
+
         }
     }
     /**
