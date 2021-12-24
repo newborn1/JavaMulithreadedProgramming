@@ -10,11 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 /**
  * @author 鑫
@@ -28,6 +24,8 @@ public class Server extends JFrame
     private ServerSocket server; // server socket
     private Socket connection; // connection to client
     private int counter = 1; // counter of number of connections
+    private String uploadFilepath;
+    private String downloadFilepaht;
 
     // set up GUI
     public Server()
@@ -137,7 +135,43 @@ public class Server extends JFrame
                 message = ( String ) input.readObject(); // read new message
                 displayMessage( "\n" + message ); // display message
                 if(message.equals("CLIENT>>> UPLOAD" ) ){
-                    getFile((String)input.readObject());
+                    uploadFilepath = (String)input.readObject();
+                    FileInputStream filestream = null;
+                    filestream = new FileInputStream(uploadFilepath);
+                    /**
+                     * 获得文件名称
+                     */
+                    String[] filenames = uploadFilepath.split("\\\\");
+                    try {
+                        Files.createFile(Paths.get(FileSystem.REMOTE_PATH));
+                    } catch (IOException ioe) {
+
+                    }
+                    try {
+                        if (!files.createNewFile()) {
+                            JOptionPane.showConfirmDialog(buttonYes,"该文件已上传，请勿重复上传！","警告",JOptionPane.OK_CANCEL_OPTION);
+                            System.out.println("该文件已上传，请勿重复上传!");
+                            return;
+                        }
+                    } catch (IOException ioE) {
+                        JOptionPane.showConfirmDialog(buttonYes,"上传失败！","警告",JOptionPane.OK_CANCEL_OPTION);
+                        System.out.println("上传失败!");
+                        ioE.printStackTrace();
+                        return;
+                    }
+                    /**
+                     * TODO 将out.writeObject改为向网络输出即可
+                     */
+                    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(files))) {
+                        try (ObjectInputStream oin = new ObjectInputStream(filestream)) {
+                            //将文档保存到HashTable和指定目录中上传失败
+                            getClient().sendFile(oin,filenames[filenames.length - 1]);
+                        }
+                    } catch (IOException | ClassNotFoundException exception) {
+                        System.out.println("文件上传失败，请检查文件是否损坏！");
+                        JOptionPane.showConfirmDialog(buttonYes,"上传失败，请检查文件是否损坏！","警告",JOptionPane.OK_CANCEL_OPTION);
+                        return;
+                    }
                 }
             } // end try
             catch ( ClassNotFoundException classNotFoundException )

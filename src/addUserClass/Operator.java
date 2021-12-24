@@ -138,8 +138,9 @@ public class Operator extends AbstractUser {
 					break;
 				case JFileChooser.APPROVE_OPTION:
 					String path = fileChooser.getSelectedFile().getPath();
-					File file = new File(path);
 					FileInputStream filestream = null;
+					System.out.println("uploading...");
+					getClient().sendFile(path);
 					try {
 						System.out.println("uploading...");
 						filestream = new FileInputStream(file);

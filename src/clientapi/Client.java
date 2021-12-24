@@ -1,19 +1,17 @@
 package clientapi;
 
+import com.sun.corba.se.pept.encoding.InputObject;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
+import javax.tools.FileObject;
 
 /**
  * @author 鑫
@@ -27,6 +25,8 @@ public class Client extends JFrame
     private String message = ""; // message from server
     private String chatServer; // host server for this application
     private Socket client; // socket to communicate with server
+    private String downloadFilepath;//下载的文件路径
+    private String uploadFilepath;//上传文件路径
 
     /**
      * initialize chatServer and set up GUI
@@ -126,7 +126,7 @@ public class Client extends JFrame
      * @param out 如果Out不是空则将读到的消息发送给out对象流
      * @throws IOException
      */
-    public void processConnection(ObjectOutputStream out) throws IOException
+    public void processConnection() throws IOException
     {
         // enable enterField so client user can send messages
         setTextFieldEditable( true );
@@ -140,10 +140,38 @@ public class Client extends JFrame
                  */
                 message = ( String ) input.readObject(); // read new message
                 displayMessage( "\n" + message ); // display message
-                if(message.equals("SERVER>>> FILE_DOWMLOAD" )){
+                if(message.equals("SERVER>>> " )){
                     out.writeObject("这是文件的内容");
                     /* 读取文件内容 */
                     out.writeObject(input.readObject());
+                }else if(message.equals("SERVER>>> RESPONSE_DOWNLOAD")){
+                    File file = new File(downloadFilepath);
+
+                    try {
+                        Files.createDirectories(Paths.get(downloadFilepath));
+                    } catch (IOException ioE) {}
+                    /**
+                     * TODO 改为网络传输：即将下载时改为从服务端读取,并且需要把这部分代码放在server，这里要改为从server获得,原来的也需要改
+                     * 文件类与文件内容不一样
+                     */
+                    try {
+                        if (!file.createNewFile()) {
+                            JOptionPane.showConfirmDialog(null, "该文件已下载到本地，请勿重复下载!", "警告", JOptionPane.OK_CANCEL_OPTION);
+                            System.out.println("该文件已下载到本地，请勿重复下载!");
+                            return;
+                        } else {
+                            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+								out.writeObject(input.readObject());
+                            }
+                        }
+                    } catch (IOException ioE) {
+                        JOptionPane.showConfirmDialog(null, "下载失败!", "警告", JOptionPane.OK_CANCEL_OPTION);
+                        System.out.println("下载失败!");
+                        ioE.printStackTrace();
+                        return;
+                    }
+                    JOptionPane.showConfirmDialog(null, "下载成功!", "提示", JOptionPane.OK_CANCEL_OPTION);
+                    System.out.println("下载成功");
                 }
             } // end try
             catch ( ClassNotFoundException classNotFoundException )
@@ -172,19 +200,21 @@ public class Client extends JFrame
         } // end catch
     } // end method closeConnection
 
-    public void sendFile(ObjectInputStream oin,String filename) throws IOException,ClassNotFoundException{
-
+    public void sendFile(String filename) throws IOException,ClassNotFoundException{
+        uploadFilepath = filename;
         output.writeObject("CLIENT>>> UPLOAD");
         output.writeObject(filename);
-        output.writeObject(oin.readObject());
+        File file = new File(uploadFilepath);
+        FileInputStream fileInputStream = new FileInputStream(file);
+        output.writeObject(fileInputStream.read());
         /*只需要一次性flush吗*/
         output.flush();
     }
-    public void getFile(String filename) throws IOException,ClassNotFoundException{
+    public void getFile(String filename,String filepath) throws IOException {
+        this.downloadFilepath = filepath;
         sendData("CLIENT>>> DOWNLOAD");
         output.writeObject(filename);
         output.flush();
-        out.writeObject(input.readObject());
     }
 
     /**

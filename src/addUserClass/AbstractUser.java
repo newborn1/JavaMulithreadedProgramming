@@ -227,36 +227,12 @@ public abstract class AbstractUser {
 					}
 					System.out.println("下载文件中......");
 					String path = fileChooser.getSelectedFile().getPath();
-					File file = new File(path + "\\" + doc.getFilename());
 
 					try {
-						Files.createDirectories(Paths.get(path));
-					} catch (IOException ioE) {
-
+						client.getFile(doc.getFilename(),path+"\\"+doc.getFilename());
+					} catch (IOException ex) {
+						JOptionPane.showConfirmDialog(buttonYes, "下载失败。", "警告", JOptionPane.OK_CANCEL_OPTION);
 					}
-					/**
-					 * TODO 改为网络传输：即将下载时改为从服务端读取,并且需要把这部分代码放在server，这里要改为从server获得,原来的也需要改
-					 * 文件类与文件内容不一样
-					 */
-					try {
-						if (!file.createNewFile()) {
-							JOptionPane.showConfirmDialog(buttonYes, "该文件已下载到本地，请勿重复下载!", "警告", JOptionPane.OK_CANCEL_OPTION);
-							System.out.println("该文件已下载到本地，请勿重复下载!");
-							return;
-						} else {
-							try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
-								client.getFile(doc.getFilename());
-//								out.writeObject("这是文件的内容"+doc);
-							}
-						}
-					} catch (IOException ioE) {
-						JOptionPane.showConfirmDialog(buttonYes, "下载失败!", "警告", JOptionPane.OK_CANCEL_OPTION);
-						System.out.println("下载失败!");
-						ioE.printStackTrace();
-						return;
-					}
-					JOptionPane.showConfirmDialog(buttonYes, "下载成功!", "提示", JOptionPane.OK_CANCEL_OPTION);
-					System.out.println("下载成功");
 					break;
 				default:
 					break;
