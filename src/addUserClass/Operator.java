@@ -133,19 +133,16 @@ public class Operator extends AbstractUser {
 			int result = fileChooser.showOpenDialog(panel);
 			switch (result) {
 				case JFileChooser.CANCEL_OPTION:
-					JOptionPane.showConfirmDialog(buttonYes,"上传失败!","警告",JOptionPane.OK_CANCEL_OPTION);
+					JOptionPane.showConfirmDialog(buttonYes, "上传失败!", "警告", JOptionPane.OK_CANCEL_OPTION);
 					System.out.println("上传失败");
 					break;
 				case JFileChooser.APPROVE_OPTION:
 					String path = fileChooser.getSelectedFile().getPath();
-					FileInputStream filestream = null;
-					System.out.println("uploading...");
-					getClient().sendFile(path);
 					try {
 						System.out.println("uploading...");
-						filestream = new FileInputStream(file);
-					} catch (FileNotFoundException fileE) {
-						JOptionPane.showConfirmDialog(buttonYes,"找不到该文件，上传失败!","警告",JOptionPane.OK_CANCEL_OPTION);
+						getClient().sendFile(path);
+					} catch (IOException | ClassNotFoundException fileE) {
+						JOptionPane.showConfirmDialog(buttonYes, "找不到该文件，上传失败!", "警告", JOptionPane.OK_CANCEL_OPTION);
 						System.out.println("找不到该文件，上传失败！");
 						return;
 					}
@@ -155,42 +152,12 @@ public class Operator extends AbstractUser {
 					String[] filenames = path.split("\\\\");
 					String id = idFiled.getText();
 					String description = descriptionArea.getText();
-					try {
-						Files.createFile(Paths.get(FileSystem.REMOTE_PATH));
-					} catch (IOException ioe) {
-
-					}
-					try {
-						if (!files.createNewFile()) {
-							JOptionPane.showConfirmDialog(buttonYes,"该文件已上传，请勿重复上传！","警告",JOptionPane.OK_CANCEL_OPTION);
-							System.out.println("该文件已上传，请勿重复上传!");
-							return;
-						}
-					} catch (IOException ioE) {
-						JOptionPane.showConfirmDialog(buttonYes,"上传失败！","警告",JOptionPane.OK_CANCEL_OPTION);
-						System.out.println("上传失败!");
-						ioE.printStackTrace();
-						return;
-					}
-					/**
-					 * TODO 将out.writeObject改为向网络输出即可
-					 */
-					try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(files))) {
-						try (ObjectInputStream oin = new ObjectInputStream(filestream)) {
-							//将文档保存到HashTable和指定目录中上传失败
-							getClient().sendFile(oin,filenames[filenames.length - 1]);
-						}
-					} catch (IOException | ClassNotFoundException exception) {
-						System.out.println("文件上传失败，请检查文件是否损坏！");
-						JOptionPane.showConfirmDialog(buttonYes,"上传失败，请检查文件是否损坏！","警告",JOptionPane.OK_CANCEL_OPTION);
-						return;
-					}
 
 					Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
 					while (true) {
 						try {
-							DataProcessing.insertDoc(id, this.getName(), timestamp, description, doc.getFilename());
+							DataProcessing.insertDoc(id, this.getName(), timestamp, description, filenames[filenames.length - 1]);
 							break;
 						} catch (SQLException sqlE) {
 							DataProcessing.init();

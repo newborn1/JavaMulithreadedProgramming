@@ -24,8 +24,8 @@ public class Server extends JFrame
     private ServerSocket server; // server socket
     private Socket connection; // connection to client
     private int counter = 1; // counter of number of connections
-    private String uploadFilepath;
-    private String downloadFilepaht;
+    private String uploadFilename;
+    private String downloadFilename;
 
     // set up GUI
     public Server()
@@ -135,26 +135,22 @@ public class Server extends JFrame
                 message = ( String ) input.readObject(); // read new message
                 displayMessage( "\n" + message ); // display message
                 if(message.equals("CLIENT>>> UPLOAD" ) ){
-                    uploadFilepath = (String)input.readObject();
-                    FileInputStream filestream = null;
-                    filestream = new FileInputStream(uploadFilepath);
+                    uploadFilename = (String)input.readObject();
                     /**
                      * 获得文件名称
                      */
-                    String[] filenames = uploadFilepath.split("\\\\");
                     try {
                         Files.createFile(Paths.get(FileSystem.REMOTE_PATH));
-                    } catch (IOException ioe) {
-
-                    }
+                    } catch (IOException ioe) {}
+                    File files = new File(FileSystem.REMOTE_PATH+"\\"+ uploadFilename);
                     try {
                         if (!files.createNewFile()) {
-                            JOptionPane.showConfirmDialog(buttonYes,"该文件已上传，请勿重复上传！","警告",JOptionPane.OK_CANCEL_OPTION);
+                            JOptionPane.showConfirmDialog(null,"该文件已上传，请勿重复上传！","警告",JOptionPane.OK_CANCEL_OPTION);
                             System.out.println("该文件已上传，请勿重复上传!");
                             return;
                         }
                     } catch (IOException ioE) {
-                        JOptionPane.showConfirmDialog(buttonYes,"上传失败！","警告",JOptionPane.OK_CANCEL_OPTION);
+                        JOptionPane.showConfirmDialog(null,"上传失败！","警告",JOptionPane.OK_CANCEL_OPTION);
                         System.out.println("上传失败!");
                         ioE.printStackTrace();
                         return;
@@ -163,15 +159,23 @@ public class Server extends JFrame
                      * TODO 将out.writeObject改为向网络输出即可
                      */
                     try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(files))) {
-                        try (ObjectInputStream oin = new ObjectInputStream(filestream)) {
-                            //将文档保存到HashTable和指定目录中上传失败
-                            getClient().sendFile(oin,filenames[filenames.length - 1]);
-                        }
-                    } catch (IOException | ClassNotFoundException exception) {
+                        out.writeObject(input.readObject());
+                    } catch (IOException exception) {
                         System.out.println("文件上传失败，请检查文件是否损坏！");
-                        JOptionPane.showConfirmDialog(buttonYes,"上传失败，请检查文件是否损坏！","警告",JOptionPane.OK_CANCEL_OPTION);
+                        JOptionPane.showConfirmDialog(null,"上传失败，请检查文件是否损坏！","警告",JOptionPane.OK_CANCEL_OPTION);
                         return;
                     }
+                }else if(message.equals("CLIENT>>> DOWNLOAD")){
+                    sendData("SERVER>>> RESPONSE_DOWNLOAD");
+                    downloadFilename = (String) input.readObject();
+                    File files = new File(FileSystem.REMOTE_PATH+"\\"+downloadFilename);
+                    /*将内容写入*/
+                    try {
+                        FileOutputStream fileOutputStream = new FileOutputStream(files);
+                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+                        output.writeObject(objectOutputStream);
+                        output.flush();
+                    } catch (IOException e) {}
                 }
             } // end try
             catch ( ClassNotFoundException classNotFoundException )
@@ -194,18 +198,7 @@ public class Server extends JFrame
             throw new IOException("上传失败");
         }
     }
-    public void sendFile(String filename){
-        File files = new File(FileSystem.REMOTE_PATH+"\\"+filename);
-        /*将内容写入*/
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(files);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-            output.writeObject(objectOutputStream);
-            output.flush();
-        } catch (IOException e) {
 
-        }
-    }
     /**
      * close streams and socket
      */

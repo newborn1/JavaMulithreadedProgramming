@@ -1,6 +1,7 @@
 package clientapi;
 
 import com.sun.corba.se.pept.encoding.InputObject;
+import filesystem.FileSystem;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -76,7 +77,7 @@ public class Client extends JFrame
             /**
              * TODO 这里会等待服务端发送消息
              */
-            processConnection(null); // process connection
+            processConnection(); // process connection
         } // end try
         catch ( EOFException eofException )
         {
@@ -123,7 +124,6 @@ public class Client extends JFrame
 
     /** process connection with server
      *
-     * @param out 如果Out不是空则将读到的消息发送给out对象流
      * @throws IOException
      */
     public void processConnection() throws IOException
@@ -141,9 +141,7 @@ public class Client extends JFrame
                 message = ( String ) input.readObject(); // read new message
                 displayMessage( "\n" + message ); // display message
                 if(message.equals("SERVER>>> " )){
-                    out.writeObject("这是文件的内容");
                     /* 读取文件内容 */
-                    out.writeObject(input.readObject());
                 }else if(message.equals("SERVER>>> RESPONSE_DOWNLOAD")){
                     File file = new File(downloadFilepath);
 
@@ -200,16 +198,23 @@ public class Client extends JFrame
         } // end catch
     } // end method closeConnection
 
-    public void sendFile(String filename) throws IOException,ClassNotFoundException{
-        uploadFilepath = filename;
+    public void sendFile(String filepath) throws IOException,ClassNotFoundException{
+        uploadFilepath = filepath;
         output.writeObject("CLIENT>>> UPLOAD");
-        output.writeObject(filename);
+        /**
+         * 获得文件名称
+         */
+        String[] filenames = filepath.split("\\\\");
+        /*传输文件名*/
+        output.writeObject(filenames[filenames.length - 1]);
         File file = new File(uploadFilepath);
         FileInputStream fileInputStream = new FileInputStream(file);
+        /*传输文件*/
         output.writeObject(fileInputStream.read());
         /*只需要一次性flush吗*/
         output.flush();
     }
+
     public void getFile(String filename,String filepath) throws IOException {
         this.downloadFilepath = filepath;
         sendData("CLIENT>>> DOWNLOAD");
