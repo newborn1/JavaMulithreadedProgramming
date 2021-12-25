@@ -190,7 +190,7 @@ public class DataProcessing {
 //			doc = new Doc(id,creator,timestamp,description,filename);
 			String sql = null;
 			if(description != null && !description.equals("")) {
-				sql = "INSERT INTO doc_info(Id,creator,timestamp,description,filename) VALUES (" + id + ",'" + creator + "','" + timestamp + "',‘" + description + "’,'" + filename + "')";
+				sql = "INSERT INTO doc_info(Id,creator,timestamp,description,filename) VALUES (" + id + ",'" + creator + "','" + timestamp + "','" + description + "','" + filename + "')";//原来的description分号有问题
 			}else{
 				sql = "INSERT INTO doc_info(Id,creator,timestamp,filename) VALUES ("+id+",'"+creator+"','"+timestamp+"','"+filename+"')";
 			}
@@ -408,7 +408,7 @@ public class DataProcessing {
 		try {
 			Doc doc = searchDoc("1");
 			System.out.println(doc);
-			doc.setId("12");
+			doc.setId("13");
 			insertDoc(doc.getId(),doc.getCreator(),doc.getTimestamp(),"哈哈哈哈哈hhh",doc.getFilename());
 			AbstractUser user = searchUser("jack");
 			user = searchUser("jack","111");

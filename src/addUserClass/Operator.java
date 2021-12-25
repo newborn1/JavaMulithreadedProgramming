@@ -1,16 +1,11 @@
 package adduserclass;
 
-import clientapi.Client;
 import gui.OperatorFrame;
 import dataprocessing.DataProcessing;
-import dataprocessing.Doc;
-import filesystem.FileSystem;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.InputMismatchException;

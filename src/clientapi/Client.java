@@ -1,18 +1,12 @@
 package clientapi;
 
-import com.sun.corba.se.pept.encoding.InputObject;
-import filesystem.FileSystem;
-
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import javax.swing.*;
-import javax.tools.FileObject;
 
 /**
  * @author öÎ
