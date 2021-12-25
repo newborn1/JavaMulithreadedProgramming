@@ -137,7 +137,7 @@ public class Server extends JFrame
                 if(message.equals("CLIENT>>> UPLOAD" ) ){
                     uploadFilename = (String)input.readObject();
                     /**
-                     * 获得文件名称
+                     * 获得文件和路径名称
                      */
                     try {
                         Files.createFile(Paths.get(FileSystem.REMOTE_PATH));
@@ -159,22 +159,50 @@ public class Server extends JFrame
                      * TODO 将out.writeObject改为向网络输出即可
                      */
                     try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(files))) {
-                        out.writeObject(input.readObject());
+//                        out.writeObject(input.readObject());
+                        byte[] bytes=new byte[1024];
+                        int len=0;
+                        int sizeLength=0;
+                        long fileLength= input.readLong();
+                        System.out.println(fileLength);
+                        while((len=input.read(bytes,0,bytes.length))>0)
+                        {
+                            out.write(bytes,0,len);
+                            out.flush();
+                            sizeLength+=len;
+                            if(sizeLength==fileLength)
+                            {
+                                break;
+                            }
+                        }
                     } catch (IOException exception) {
                         System.out.println("文件上传失败，请检查文件是否损坏！");
                         JOptionPane.showConfirmDialog(null,"上传失败，请检查文件是否损坏！","警告",JOptionPane.OK_CANCEL_OPTION);
                         return;
                     }
-                }else if(message.equals("CLIENT>>> DOWNLOAD")){
-                    sendData("SERVER>>> RESPONSE_DOWNLOAD");
+                    System.out.println("开始上传");
+//                    JOptionPane.showConfirmDialog(null,"上传成功！","提示",JOptionPane.OK_CANCEL_OPTION);
+                }else if("CLIENT>>> DOWNLOAD".equals(message)){
                     downloadFilename = (String) input.readObject();
+                    sendData("RESPONSE_DOWNLOAD");
                     File files = new File(FileSystem.REMOTE_PATH+"\\"+downloadFilename);
+                    /*要对应*/
+                    output.writeLong(files.length());
+                    output.flush();
+                    System.out.println(files.length());
                     /*将内容写入*/
                     try {
-                        FileOutputStream fileOutputStream = new FileOutputStream(files);
-                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-                        output.writeObject(objectOutputStream);
+                        FileInputStream fileInputStream = new FileInputStream(files);
+                        System.out.println("开始传输文件");
+                        byte[] bytes=new byte[1024];//要和接收的一致
+                        int len=0;
+                        while((len=fileInputStream.read(bytes))!=-1)
+                        {
+                            output.write(bytes,0,len);
+                            output.flush();
+                        }
                         output.flush();
+                        System.out.println("已经传输了文件");
                     } catch (IOException e) {}
                 }
             } // end try

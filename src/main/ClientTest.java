@@ -28,7 +28,6 @@ public class ClientTest {
 		}
 
 		application.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		application.runClient(); // run client application
 
 		/**
 		 * run GUI programmer
@@ -44,6 +43,8 @@ public class ClientTest {
 
 			}
 		});
+
+		application.runClient(); // run client application
 
 
 	}

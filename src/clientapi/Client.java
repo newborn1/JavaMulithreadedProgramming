@@ -144,10 +144,6 @@ public class Client extends JFrame
                     /* 读取文件内容 */
                 }else if(message.equals("SERVER>>> RESPONSE_DOWNLOAD")){
                     File file = new File(downloadFilepath);
-
-                    try {
-                        Files.createDirectories(Paths.get(downloadFilepath));
-                    } catch (IOException ioE) {}
                     /**
                      * TODO 改为网络传输：即将下载时改为从服务端读取,并且需要把这部分代码放在server，这里要改为从server获得,原来的也需要改
                      * 文件类与文件内容不一样
@@ -156,10 +152,28 @@ public class Client extends JFrame
                         if (!file.createNewFile()) {
                             JOptionPane.showConfirmDialog(null, "该文件已下载到本地，请勿重复下载!", "警告", JOptionPane.OK_CANCEL_OPTION);
                             System.out.println("该文件已下载到本地，请勿重复下载!");
+                            input.readLong();
                             return;
                         } else {
+                            /**
+                             * TODO need to see
+                             */
                             try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
-								out.writeObject(input.readObject());
+                                byte[] bytes=new byte[1024];
+                                int len=0;
+                                int sizeLength=0;
+                                long fileLength= input.readLong();
+                                System.out.println(fileLength);
+                                while((len=input.read(bytes,0,bytes.length))>0)
+                                {
+                                    out.write(bytes,0,len);
+                                    out.flush();
+                                    sizeLength+=len;
+                                    if(sizeLength==fileLength)
+                                    {
+                                        break;
+                                    }
+                                }
                             }
                         }
                     } catch (IOException ioE) {
@@ -200,7 +214,7 @@ public class Client extends JFrame
 
     public void sendFile(String filepath) throws IOException,ClassNotFoundException{
         uploadFilepath = filepath;
-        output.writeObject("CLIENT>>> UPLOAD");
+        sendData("UPLOAD");
         /**
          * 获得文件名称
          */
@@ -210,14 +224,24 @@ public class Client extends JFrame
         File file = new File(uploadFilepath);
         FileInputStream fileInputStream = new FileInputStream(file);
         /*传输文件*/
-        output.writeObject(fileInputStream.read());
+        output.writeLong(file.length());
+        System.out.println("开始传输文件");
+        byte[] bytes=new byte[1024];//要和接收的一致
+        int len=0;
+        while((len=fileInputStream.read(bytes))!=-1)
+        {
+            output.write(bytes,0,len);
+            output.flush();
+        }
+        System.out.println("文件传输结束");
+//        output.writeObject(fileInputStream.read());
         /*只需要一次性flush吗*/
         output.flush();
     }
 
     public void getFile(String filename,String filepath) throws IOException {
         this.downloadFilepath = filepath;
-        sendData("CLIENT>>> DOWNLOAD");
+        sendData("DOWNLOAD");
         output.writeObject(filename);
         output.flush();
     }

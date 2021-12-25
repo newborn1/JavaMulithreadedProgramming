@@ -189,7 +189,7 @@ public class DataProcessing {
 		else{
 //			doc = new Doc(id,creator,timestamp,description,filename);
 			String sql = null;
-			if(description!=null) {
+			if(description != null && !description.equals("")) {
 				sql = "INSERT INTO doc_info(Id,creator,timestamp,description,filename) VALUES (" + id + ",'" + creator + "','" + timestamp + "',¡®" + description + "¡¯,'" + filename + "')";
 			}else{
 				sql = "INSERT INTO doc_info(Id,creator,timestamp,filename) VALUES ("+id+",'"+creator+"','"+timestamp+"','"+filename+"')";
@@ -409,7 +409,7 @@ public class DataProcessing {
 			Doc doc = searchDoc("1");
 			System.out.println(doc);
 //			doc.setId("2");
-//			insertDoc(doc.getId(),doc.getCreator(),doc.getTimestamp(),doc.getDescription(),doc.getFilename());
+			insertDoc(doc.getId(),doc.getCreator(),doc.getTimestamp(),doc.getDescription(),doc.getFilename());
 			AbstractUser user = searchUser("jack");
 			user = searchUser("jack","111");
 			System.out.println(user);

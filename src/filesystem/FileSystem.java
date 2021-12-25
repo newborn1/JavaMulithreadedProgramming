@@ -51,7 +51,6 @@ public class FileSystem {
 
 
 		System.out.print("ÇëÊäÈëÊı×ÖÑ¡Ôñ:");
-		Integer selection = FileSystem.EXIT_SYSTEM;
 	}
 
 	public static AbstractUser verifyUser() {

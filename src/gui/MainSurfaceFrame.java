@@ -48,6 +48,7 @@ public class MainSurfaceFrame extends JFrame {
          * ÉèÖÃ×é¼þ
          */
         addAllComponent();
+        setVisible(true);
 
         loginButton.addActionListener(actionEvent -> {
             String name = "";
