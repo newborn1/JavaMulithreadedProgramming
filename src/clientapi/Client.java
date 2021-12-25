@@ -112,7 +112,7 @@ public class Client extends JFrame
     private void getStreams() throws IOException
     {
         // set up output stream for objects
-        output = new ObjectOutputStream( client.getOutputStream() );
+        output = new ObjectOutputStream( client.getOutputStream());
 
         output.flush(); // flush output buffer to send header information
 

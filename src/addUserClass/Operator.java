@@ -160,7 +160,7 @@ public class Operator extends AbstractUser {
 							DataProcessing.insertDoc(id, this.getName(), timestamp, description, filenames[filenames.length - 1]);
 							break;
 						} catch (SQLException sqlE) {
-							DataProcessing.init();
+//							DataProcessing.init();
 						}
 					}
 
