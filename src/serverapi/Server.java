@@ -191,8 +191,7 @@ public class Server extends JFrame
                     output.flush();
                     System.out.println(files.length());
                     /*将内容写入*/
-                    try {
-                        FileInputStream fileInputStream = new FileInputStream(files);
+                    try(FileInputStream fileInputStream = new FileInputStream(files)){
                         System.out.println("开始传输文件");
                         byte[] bytes=new byte[1024];//要和接收的一致
                         int len=0;

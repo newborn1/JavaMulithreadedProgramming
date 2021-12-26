@@ -231,6 +231,7 @@ public abstract class AbstractUser {
 					try {
 						client.getFile(doc.getFilename(),path+"\\"+doc.getFilename());
 					} catch (IOException ex) {
+						ex.printStackTrace();
 						JOptionPane.showConfirmDialog(buttonYes, "œ¬‘ÿ ß∞‹°£", "æØ∏Ê", JOptionPane.OK_CANCEL_OPTION);
 					}
 					break;
