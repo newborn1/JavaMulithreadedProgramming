@@ -158,8 +158,7 @@ public class Server extends JFrame
                     /**
                      * TODO 将out.writeObject改为向网络输出即可
                      */
-                    try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(files))) {
-//                        out.writeObject(input.readObject());
+                    try (FileOutputStream out = new FileOutputStream(files)) {
                         byte[] bytes=new byte[1024];
                         int len=0;
                         int sizeLength=0;
@@ -197,6 +196,7 @@ public class Server extends JFrame
                         int len=0;
                         while((len=fileInputStream.read(bytes))!=-1)
                         {
+                            System.out.write(bytes,0,len);
                             output.write(bytes,0,len);
                             output.flush();
                         }
@@ -291,6 +291,3 @@ public class Server extends JFrame
         ); // end call to SwingUtilities.invokeLater
     } // end method setTextFieldEditable
 } // end class Server
-
-
-

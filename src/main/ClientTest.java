@@ -14,17 +14,19 @@ import java.awt.*;
  */
 public class ClientTest {
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-/**
- * TODO 为什么这里不能放在run函数里面
- */
-		Client application; // declare client application
+		/**
+ 		* TODO 为什么这里不能放在run函数里面
+ 		*/
+		// declare client application
+		Client application;
 
 		// if no command line args
 		if ( args.length == 0 ) {
-			application = new Client( "127.0.0.1" ); // connect to localhost
+			// connect to localhost
+			application = new Client( "127.0.0.1" );
 		} else {
-			application = new Client( args[ 0 ] ); // use args to connect
+			// use args to connect
+			application = new Client( args[ 0 ] );
 		}
 
 		application.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
@@ -43,9 +45,8 @@ public class ClientTest {
 
 			}
 		});
-
-		application.runClient(); // run client application
-
+		// run client application
+		application.runClient();
 
 	}
 

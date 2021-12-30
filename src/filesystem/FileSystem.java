@@ -24,8 +24,6 @@ public class FileSystem {
 	public static String NotConnectedToDatabase = "Not Connected to Database";
 	public static final int EXIT_SYSTEM = 2;
 	public static final int LOAD = 1;
-	public static final String PATH1 = "D:\\JavaExperiment\\LocalFile1";
-	public static final String PATH2 = "D:\\JavaExperiment\\LocalFile2";
 	public static final String REMOTE_PATH = "D:\\JavaExperiment\\RemoteFile";
 
 	/**
@@ -39,54 +37,51 @@ public class FileSystem {
 		 */
 		new MainSurfaceFrame(client);
 
-		String lineOne = "*******************欢迎进入档案系统**********************\n";
-		String lineTwo = "\t\t\t  1、登录\n";
-		String lineThree = "\t\t\t 2、退出\n";
-		String lineFour = "********************************************************\n";
-		StringBuilder surface = new StringBuilder();
-		surface.append(lineOne).append(lineTwo).append(lineThree).append(lineFour);
-		String mainSurface = surface.toString();
+		System.out.println("登录界面");
 
-		System.out.println(mainSurface);
-
-
-		System.out.print("请输入数字选择:");
 	}
 
-	public static AbstractUser verifyUser() {
+	/**
+	 * 输入名字和密码用于验证返回用户情况，注意name和password必须是非null
+	 *
+	 * @param name
+	 * @param password
+	 * @return AbstractUser
+	 */
+	public static AbstractUser verifyUser(String name,String password) {
+		assert name != null;
+		assert password != null;
 
-		String name = null;
-		String password = null;
 		AbstractUser u = null;
 
 		/**
 		 * TODO 对输入密码进行特殊处理
 		 */
 		while (true) {
-			System.out.print("请输入用户名:");
-			in.nextLine();
-			name = in.next();
 			try {
 				while (DataProcessing.searchUser(name) == null) {
+					JOptionPane.showConfirmDialog(null,"不存在该用户！请重新输入。","警告",JOptionPane.OK_CANCEL_OPTION);
 					System.out.println("不存在该用户。");
-					System.out.print("请输入用户名:");
-					name = in.next();
+					return null;
 				}
-				System.out.print("请输入密码:");
-				password = in.next();
 
 				u = DataProcessing.searchUser(name, password);
 
 				if (u == null) {
+					JOptionPane.showConfirmDialog(null,"密码错误!","警告",JOptionPane.OK_CANCEL_OPTION);
 					System.out.println("密码错误!");
 					return null;
+				}else{
+					return u;
 				}
-				return u;
 			} catch (SQLException e) {
 				if ("Not Connected to Database".equals(e.getMessage())) {
 					DataProcessing.init();
+					JOptionPane.showConfirmDialog(null,"数据库连接出错，请重新登录!","警告",JOptionPane.OK_CANCEL_OPTION);
 				}
+				JOptionPane.showConfirmDialog(null,"请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
 				System.out.println("请重新输入!");
+				return null;
 			}
 		}
 

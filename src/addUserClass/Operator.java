@@ -1,5 +1,4 @@
 package adduserclass;
-
 import gui.OperatorFrame;
 import dataprocessing.DataProcessing;
 
@@ -8,7 +7,6 @@ import java.awt.*;
 import java.io.*;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.InputMismatchException;
 
 /**
  * feature 档案操作员，对后台的文件进行统一管理，继承了抽象用户类
@@ -29,57 +27,9 @@ public class Operator extends AbstractUser {
 		JFrame mainFrame = new OperatorFrame(this);
 		mainFrame.setVisible(true);
 
-		Integer selector = 0;
+		System.out.print("档案操作员菜单");
 
-		final String[] allLine = {"*****************欢迎来到档案操作员菜单****************\n",
-				"\t\t\t1、显示文件列表\n",
-				"\t\t\t2、下载文件\n",
-				"\t\t\t3、上传文件\n",
-				"\t\t\t4、修改密码\n",
-				"\t\t\t5、退出\n",
-				"*******************************************************\n"
-		};
-		StringBuilder surfaceBuilder = new StringBuilder();
-		for (String s : allLine) {
-			surfaceBuilder.append(s);
-		}
-		String surface = surfaceBuilder.toString();
-		System.out.print(surface);
-
-		while (true) {
-			System.out.print("请输入数字进行选择:");
-			try {
-				break;
-			} catch (InputMismatchException inputMatchE) {
-				System.out.println("输入错误，请输入正确的数字！");
-			}
-		}
-		switch (selector) {
-			case 1:
-				try {
-					super.showFileList();
-				} catch (SQLException sqe) {
-					System.out.println(sqe.getMessage());
-					System.out.println("The problem has been solved.Please input the selector against.");
-				}
-				break;
-			case 2:
-				this.downloadFile(null);
-				break;
-			case 3:
-				this.uploadFile(null);
-				break;
-			case 4:
-				this.setPassword(super.getPassword());
-				break;
-			case 5:
-				this.exitSystem();
-				break;
-			default:
-				System.out.println("输入的值无效，请重新输入！");
-				break;
-		}
-
+		return;
 	}
 
 	/**

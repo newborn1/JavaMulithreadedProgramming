@@ -3,6 +3,7 @@ package gui;
 import adduserclass.AbstractUser;
 import clientapi.Client;
 import dataprocessing.DataProcessing;
+import filesystem.FileSystem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,39 +52,19 @@ public class MainSurfaceFrame extends JFrame {
         setVisible(true);
 
         loginButton.addActionListener(actionEvent -> {
+
             String name = "";
             String password = "";
             AbstractUser u = null;
             name = userNameTextField.getText() ;
             password = new String(passwordField.getPassword());
 
-            while (true) {
-                try {
-                    while (DataProcessing.searchUser(name) == null) {
-                        JOptionPane.showConfirmDialog(loginButton,"不存在该用户！请重新输入。","警告",JOptionPane.OK_CANCEL_OPTION);
-                        System.out.println("不存在该用户。");
-                        return;
-                    }
-
-                    u = DataProcessing.searchUser(name, password);
-                    u.setClient(client);
-
-                    if (u == null) {
-                        JOptionPane.showConfirmDialog(loginButton,"密码错误!","警告",JOptionPane.OK_CANCEL_OPTION);
-                        System.out.println("密码错误!");
-                        return;
-                    }else{
-                        break;
-                    }
-                } catch (SQLException e) {
-                    if ("Not Connected to Database".equals(e.getMessage())) {
-                        DataProcessing.init();
-                    }
-                    JOptionPane.showConfirmDialog(loginButton,"请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
-                    System.out.println("请重新输入!");
-                    return;
-                }
+            u = FileSystem.verifyUser(name,password);
+            if(u == null){
+                return;
             }
+            setVisible(false);
+            u.setClient(client);
             u.showMenu();
 
         });
@@ -122,14 +103,7 @@ public class MainSurfaceFrame extends JFrame {
         panel.add(new JPanel());
         add(panel);
         pack();
-//        add(panel,BorderLayout.CENTER);
-        /**
-         * 布局边框
-         */
 
-        /**
-         * 退出函数已关闭原窗口
-         */
     }
 
 
@@ -139,5 +113,3 @@ public class MainSurfaceFrame extends JFrame {
         surfaceFrame.setVisible(true);
     }
 }
-
-

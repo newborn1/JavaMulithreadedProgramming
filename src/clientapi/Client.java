@@ -152,7 +152,7 @@ public class Client extends JFrame
                             /**
                              * TODO need to see
                              */
-                            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+                            try (FileOutputStream out = new FileOutputStream(file)) {
                                 byte[] bytes=new byte[1024];
                                 int len=0;
                                 int sizeLength=0;
@@ -160,6 +160,7 @@ public class Client extends JFrame
                                 System.out.println(fileLength);
                                 while((len=input.read(bytes,0,bytes.length))>0)
                                 {
+                                    System.out.write(bytes,0,len);
                                     out.write(bytes,0,len);
                                     out.flush();
                                     sizeLength+=len;

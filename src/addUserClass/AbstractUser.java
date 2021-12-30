@@ -1,10 +1,7 @@
 package adduserclass;
 
 import java.awt.*;
-import java.io.ObjectOutputStream;
-import java.io.FileOutputStream;
-import java.nio.file.Paths;
-import java.nio.file.Files;
+import javax.swing.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.File;
@@ -13,8 +10,6 @@ import java.io.IOException;
 import clientapi.Client;
 import dataprocessing.DataProcessing;
 import dataprocessing.Doc;
-
-import javax.swing.*;
 
 import static filesystem.FileSystem.NotConnectedToDatabase;
 
@@ -141,8 +136,6 @@ public abstract class AbstractUser {
 	 * @throws SQLException
 	 */
 	public boolean changeSelfInfo(String password) throws SQLException {
-		//显示GUI界面
-
 		//写用户信息到存储
 		if (DataProcessing.updateUser(name, password, role)){
 			this.password=password;
@@ -244,10 +237,6 @@ public abstract class AbstractUser {
 		return true;
 	}
 
-
-
-
-
 	public void showFileList(JPanel panel){
 		Object[][] tableData = new Object[100][5];
 		try {
@@ -275,12 +264,7 @@ public abstract class AbstractUser {
 			showFileList();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
-			System.out.println("The problem has been solved.Please input the selector against.");
-			System.out.println("请重新输入!");
-			/**
-			 * TODO 异常处理
-			 */
-//			JOptionPane.showConfirmDialog(buttonYes,"操作失败，请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
+			JOptionPane.showConfirmDialog(null,"操作失败，请重新输入!","警告",JOptionPane.OK_CANCEL_OPTION);
 		}
 	}
 	/**
@@ -291,10 +275,6 @@ public abstract class AbstractUser {
 	 * @throws SQLException 
 	*/
 	public void showFileList() throws SQLException{
-		double ranValue=Math.random();
-		if (ranValue > EXCEPTION_PROBABILITY) {
-			throw new SQLException("Error in accessing file DB");
-		}
 		System.out.println("...........Document list...........");
 		ResultSet document = DataProcessing.listDoc();
 		while(document.next()){

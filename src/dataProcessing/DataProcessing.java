@@ -23,7 +23,7 @@ public class DataProcessing {
 	private static Statement statement;
 	private static ResultSet resultSet;
 
-	static enum ROLE_ENUM {
+	enum ROLE_ENUM {
 		/**
 		 * administrator
 		 */
@@ -48,15 +48,7 @@ public class DataProcessing {
 		}
 	}
 	static {
-		users = new Hashtable<String, AbstractUser >();
-		users.put("jack", new Operator("jack","123","operator"));
-		users.put("rose", new Browser("rose","123","browser"));
-		users.put("kate", new Administrator("kate","123","administrator"));
 		init();
-
-		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-		docs = new Hashtable<String,Doc>();
-		docs.put("0001",new Doc("0001","jack",timestamp,"Doc Source Java","Doc.java"));
 	}
 
 	/**
@@ -81,8 +73,6 @@ public class DataProcessing {
 			statement = connection.createStatement(
 					ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_READ_ONLY );
-			String sql="select * from user_info";
-			resultSet = statement.executeQuery(sql);
 			connectToDB = true;
 
 		}catch(ClassNotFoundException e ){
@@ -137,10 +127,7 @@ public class DataProcessing {
 		if(resultSet.next()){
 			return newDoc(resultSet);
 		}
-//		if (docs.containsKey(id)) {
-//			Doc temp =docs.get(id);
-//			return temp;
-//		}
+
 		return null;
 	}
 
@@ -177,25 +164,19 @@ public class DataProcessing {
 	 * @throws SQLException
 	 */
 	public static boolean insertDoc(String id, String creator, Timestamp timestamp, String description, String filename) throws SQLException{
-//		Doc doc;
-
 		if (!connectToDB) {
 			throw new SQLException("Not Connected to Database");
 		}
-
-		if (docs.containsKey(id)) {
-			return false;
-		}
 		else{
-//			doc = new Doc(id,creator,timestamp,description,filename);
 			String sql = null;
 			if(description != null && !description.equals("")) {
-				sql = "INSERT INTO doc_info(Id,creator,timestamp,description,filename) VALUES (" + id + ",'" + creator + "','" + timestamp + "','" + description + "','" + filename + "')";//原来的description分号有问题
+				//原来的description分号有问题
+				sql = "INSERT INTO doc_info(Id,creator,timestamp,description,filename) VALUES (" + id + ",'" + creator + "','" + timestamp + "','" + description + "','" + filename + "')";
 			}else{
 				sql = "INSERT INTO doc_info(Id,creator,timestamp,filename) VALUES ("+id+",'"+creator+"','"+timestamp+"','"+filename+"')";
 			}
 			statement.executeUpdate(sql);
-//			docs.put(id, doc)
+
 			return true;
 		}
 	}
@@ -218,9 +199,6 @@ public class DataProcessing {
 			return newUser(resultSet);
 		}
 
-//		if (users.containsKey(name)) {
-//			return users.get(name);
-//		}
 		return null;
 	}
 
@@ -242,12 +220,7 @@ public class DataProcessing {
 		if(resultSet.next()){
 			return newUser(resultSet);
 		}
-//		if (users.containsKey(name)) {
-//			AbstractUser temp =users.get(name);
-//			if ((temp.getPassword()).equals(password)) {
-//				return temp;
-//			}
-//		}
+
 		return null;
 	}
 
@@ -278,7 +251,6 @@ public class DataProcessing {
 	 * @throws SQLException
 	 */
 	public static boolean updateUser(String name, String password, String role) throws SQLException{
-		AbstractUser user;
 		String sql = "UPDATE user_info SET username='"+name+"', password='"+password+"',role='"+role+"' WHERE username='"+name+"'";
 		if(statement.executeUpdate(sql)!=0){
 			return true;
@@ -371,12 +343,7 @@ public class DataProcessing {
 		else {
 			return false;
 		}
-//		if (users.containsKey(name)){
-//			users.remove(name);
-//			return true;
-//		}else {
-//			return false;
-//		}
+
 	}
 
 	/**
@@ -404,7 +371,6 @@ public class DataProcessing {
 
 
 	public static void main(String[] args) {
-		init();
 		try {
 			Doc doc = searchDoc("1");
 			System.out.println(doc);
