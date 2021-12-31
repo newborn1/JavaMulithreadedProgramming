@@ -26,8 +26,7 @@ public class Administrator extends AbstractUser {
 
 	@Override
 	public void showMenu() {
-		JFrame mainFrame = new AdministratorFrame(this);
-		mainFrame.setVisible(true);
+		new AdministratorFrame(this);
 
 		System.out.print("进入管理管界面");
 
@@ -100,6 +99,9 @@ public class Administrator extends AbstractUser {
 		panel4.add(buttonNo);
 		panel.add(panel4);
 		panel.add(new JPanel());
+		buttonNo.addActionListener(e -> {
+			panel.getParent().getParent().getParent().getParent().getParent().setVisible(false);
+		});
 		buttonYes.addActionListener(actionEvent -> {
 			try {
 				String name, password, role;
@@ -157,6 +159,9 @@ public class Administrator extends AbstractUser {
 		panel2.add(buttonNo);
 		panel.add(panel2, BorderLayout.SOUTH);
 
+		buttonNo.addActionListener(e -> {
+			panel.getParent().getParent().getParent().getParent().getParent().setVisible(false);
+		});
 		buttonYes.addActionListener(actionListener -> {
 			/**
 			 * 获得JTable组件
@@ -237,6 +242,9 @@ public class Administrator extends AbstractUser {
 		panel.add(panel4);
 		panel.add(new JPanel());
 
+		buttonNo.addActionListener(e -> {
+			panel.getParent().getParent().getParent().getParent().getParent().setVisible(false);
+		});
 		buttonYes.addActionListener(actionListener -> {
 			String role = "";
 			String password = "";

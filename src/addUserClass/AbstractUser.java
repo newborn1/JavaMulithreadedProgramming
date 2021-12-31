@@ -25,7 +25,6 @@ public abstract class AbstractUser {
 	private String password;
 	private String role;
 	private Client client;
-	static final double EXCEPTION_PROBABILITY=0.9;
 
 	private JButton buttonYes = new JButton("确定");
 	private JButton buttonNo = new JButton("取消");
@@ -97,6 +96,10 @@ public abstract class AbstractUser {
 		panel.add(panel5);
 		panel.add(new JPanel());
 
+		buttonNo.addActionListener(e -> {
+			panel.getParent().getParent().getParent().getParent().getParent().setVisible(false);
+		});
+
 		final boolean[] flag = {true};
 		/**
 		 * TODO 不能完美调用
@@ -157,9 +160,7 @@ public abstract class AbstractUser {
 	public abstract void showMenu();
 
 	/**
-	 * TODO 将文件从网络上下载，而不是从本地下载：即将下载来源改为服务端
-	 *
-	 * 档案下载:根据档案号在哈希表中查找得到文件信息，在未涉及网络之前，只需实现在单机上将对应文件拷贝至指定目录中
+	 * 档案下载:根据档案号在数据库中查找，将文件从网络上下载，而不是从本地下载：即下载来源为服务端
 	 *
 	 * @return
 	 */

@@ -16,9 +16,6 @@ public class DataProcessing {
 
 	private static boolean connectToDB=false;
 
-	static Hashtable<String, AbstractUser > users;
-	static Hashtable<String, Doc> docs;
-
 	private static Connection connection;
 	private static Statement statement;
 	private static ResultSet resultSet;

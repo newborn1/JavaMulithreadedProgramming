@@ -14,7 +14,7 @@ public class AdministratorFrame extends AbstractFrame {
 
     public AdministratorFrame(AbstractUser user){
         super(user);
-        setTitle("欢迎进入档案操作员管理界面");
+        setTitle("欢迎进入档案管理员管理界面");
         addAllComponent();
     }
 

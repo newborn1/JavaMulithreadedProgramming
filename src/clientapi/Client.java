@@ -10,29 +10,40 @@ import javax.swing.*;
 
 /**
  * @author 鑫
+ * enterField:enters information from user
+ * displayArea:display information to user
+ * output:output stream to server
+ * input:input stream from server
+ * message:message from server
+ * chatServer:host server for this application
+ * client:socket to communicate with server
+ * downloadFilepath:下载的文件路径
+ * uploadFilepath:上传的文件路径
  */
 public class Client extends JFrame
 {
-    private JTextField enterField; // enters information from user
-    private JTextArea displayArea; // display information to user
-    private ObjectOutputStream output; // output stream to server
-    private ObjectInputStream input; // input stream from server
-    private String message = ""; // message from server
-    private String chatServer; // host server for this application
-    private Socket client; // socket to communicate with server
-    private String downloadFilepath;//下载的文件路径
-    private String uploadFilepath;//上传文件路径
+    private JTextField enterField;
+    private JTextArea displayArea;
+    private ObjectOutputStream output;
+    private ObjectInputStream input;
+    private String message = "";
+    private String chatServer;
+    private Socket client;
+    private String downloadFilepath;
+    private String uploadFilepath;
 
     /**
      * initialize chatServer and set up GUI
+     * host:set server to which this client connects
      */
     public Client( String host )
     {
         super( "Client" );
 
-        chatServer = host; // set server to which this client connects
+        chatServer = host;
 
-        enterField = new JTextField(); // create enterField
+        // create enterField
+        enterField = new JTextField();
         enterField.setEditable( false );
         enterField.addActionListener(
                 new ActionListener()
@@ -102,7 +113,10 @@ public class Client extends JFrame
                 client.getInetAddress().getHostName() );
     } // end method connectToServer
 
-    // get streams to send and receive data
+    /**
+     * get streams to send and receive data
+     * @throws IOException
+     */
     private void getStreams() throws IOException
     {
         // set up output stream for objects
@@ -132,11 +146,11 @@ public class Client extends JFrame
                 /**
                  * TODO 我加入的测试程序代码
                  */
-                message = ( String ) input.readObject(); // read new message
-                displayMessage( "\n" + message ); // display message
-                if(message.equals("SERVER>>> " )){
-                    /* 读取文件内容 */
-                }else if(message.equals("SERVER>>> RESPONSE_DOWNLOAD")){
+                // read new message
+                message = ( String ) input.readObject();
+                // display message
+                displayMessage( "\n" + message );
+                if(message.equals("SERVER>>> RESPONSE_DOWNLOAD")){
                     File file = new File(downloadFilepath);
                     /**
                      * TODO 改为网络传输：即将下载时改为从服务端读取,并且需要把这部分代码放在server，这里要改为从server获得,原来的也需要改
@@ -189,11 +203,14 @@ public class Client extends JFrame
         } while ( !message.equals( "SERVER>>> TERMINATE" ) );
     } // end method processConnection
 
-    // close streams and socket
+    /**
+     * close streams and socket
+     */
     private void closeConnection()
     {
         displayMessage( "\nClosing connection" );
-        setTextFieldEditable( false ); // disable enterField
+        // disable enterField
+        setTextFieldEditable( false );
 
         try
         {
@@ -221,7 +238,8 @@ public class Client extends JFrame
         /*传输文件*/
         output.writeLong(file.length());
         System.out.println("开始传输文件");
-        byte[] bytes=new byte[1024];//要和接收的一致
+        //要和接收的一致
+        byte[] bytes=new byte[1024];
         int len=0;
         while((len=fileInputStream.read(bytes))!=-1)
         {
@@ -229,8 +247,7 @@ public class Client extends JFrame
             output.flush();
         }
         System.out.println("文件传输结束");
-//        output.writeObject(fileInputStream.read());
-        /*只需要一次性flush吗*/
+        //只需要一次性flush吗
         output.flush();
     }
 
@@ -292,4 +309,3 @@ public class Client extends JFrame
         ); // end call to SwingUtilities.invokeLater
     } // end method setTextFieldEditable
 } // end class Client
-

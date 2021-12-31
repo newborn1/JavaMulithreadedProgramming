@@ -17,22 +17,32 @@ import javax.swing.*;
  */
 public class Server extends JFrame
 {
-    private JTextField enterField; // inputs message from user
-    private JTextArea displayArea; // display information to user
-    private ObjectOutputStream output; // output stream to client
-    private ObjectInputStream input; // input stream from client
-    private ServerSocket server; // server socket
-    private Socket connection; // connection to client
-    private int counter = 1; // counter of number of connections
+    /**
+     * enterField:inputs message from user
+     * displayArea:display information to user
+     * output:output stream to client
+     * server:server socket
+     * connection:connection to client
+     * counter:counter of number of connections
+     */
+    private JTextField enterField;
+    private JTextArea displayArea;
+    private ObjectOutputStream output;
+    private ObjectInputStream input;
+    private ServerSocket server;
+    private Socket connection;
+    private int counter = 1;
     private String uploadFilename;
     private String downloadFilename;
 
-    // set up GUI
+    /**
+     * set up GUI
+     */
     public Server()
     {
         super( "Server" );
-
-        enterField = new JTextField(); // create enterField
+        // create enterField
+        enterField = new JTextField();
         enterField.setEditable( false );
         enterField.addActionListener(
                 new ActionListener()
@@ -48,20 +58,24 @@ public class Server extends JFrame
         ); // end call to addActionListener
 
         add( enterField, BorderLayout.NORTH );
-
-        displayArea = new JTextArea(); // create displayArea
+        // create displayArea
+        displayArea = new JTextArea();
         add( new JScrollPane( displayArea ), BorderLayout.CENTER );
-
-        setSize( 300, 150 ); // set size of window
-        setVisible( true ); // show window
+        // set size of window
+        setSize( 300, 150 );
+        // show window
+        setVisible( true );
     } // end Server constructor
 
-    // set up and run server
+    /**
+     * set up and run server
+     */
     public void runServer()
     {
         try // set up server to receive connections; process connections
         {
-            server = new ServerSocket( 12345, 100 ); // create ServerSocket
+            // create ServerSocket
+            server = new ServerSocket( 12345, 100 );
 
             while ( true )
             {
@@ -88,14 +102,18 @@ public class Server extends JFrame
         } // end catch
     } // end method runServer
 
-    // wait for connection to arrive, then display connection info
+    /**
+     * wait for connection to arrive, then display connection info
+     * @throws IOException
+     */
     private void waitForConnection() throws IOException
     {
         displayMessage( "Waiting for connection\n" );
         /**
          * TODO 这个很重要，返回客户端的信息
          */
-        connection = server.accept(); // allow server to accept connection,一直等待直到接收到客户端的请求
+        // allow server to accept connection,一直等待直到接收到客户端的请求
+        connection = server.accept();
         displayMessage( "Connection " + counter + " received from: " +
                 connection.getInetAddress().getHostName() );
     } // end method waitForConnection
@@ -119,11 +137,15 @@ public class Server extends JFrame
         displayMessage( "\nGot I/O streams\n" );
     } // end method getStreams
 
-    // process connection with client
+    /**
+     * process connection with client
+     * @throws IOException
+     */
     private void processConnection() throws IOException
     {
         String message = "Connection successful";
-        sendData( message ); // send connection successful message
+        // send connection successful message
+        sendData( message );
 
         // enable enterField so server user can send messages
         setTextFieldEditable( true );
@@ -132,8 +154,10 @@ public class Server extends JFrame
         {
             try // read message and display it
             {
-                message = ( String ) input.readObject(); // read new message
-                displayMessage( "\n" + message ); // display message
+                // read new message
+                message = ( String ) input.readObject();
+                // display message
+                displayMessage( "\n" + message );
                 if(message.equals("CLIENT>>> UPLOAD" ) ){
                     uploadFilename = (String)input.readObject();
                     /**
@@ -180,7 +204,6 @@ public class Server extends JFrame
                         return;
                     }
                     System.out.println("开始上传");
-//                    JOptionPane.showConfirmDialog(null,"上传成功！","提示",JOptionPane.OK_CANCEL_OPTION);
                 }else if("CLIENT>>> DOWNLOAD".equals(message)){
                     downloadFilename = (String) input.readObject();
                     sendData("RESPONSE_DOWNLOAD");
@@ -192,7 +215,8 @@ public class Server extends JFrame
                     /*将内容写入*/
                     try(FileInputStream fileInputStream = new FileInputStream(files)){
                         System.out.println("开始传输文件");
-                        byte[] bytes=new byte[1024];//要和接收的一致
+                        //要和接收的一致
+                        byte[] bytes=new byte[1024];
                         int len=0;
                         while((len=fileInputStream.read(bytes))!=-1)
                         {
@@ -232,8 +256,8 @@ public class Server extends JFrame
     private void closeConnection()
     {
         displayMessage( "\nTerminating connection\n" );
-        setTextFieldEditable( false ); // disable enterField
-
+        // disable enterField
+        setTextFieldEditable( false );
         try
         {
             output.close(); // close output stream
@@ -246,7 +270,11 @@ public class Server extends JFrame
         } // end catch
     } // end method closeConnection
 
-    // send message to client
+
+    /**
+     * send message to client
+     * @param message
+     */
     private void sendData( String message )
     {
         try // send object to client
@@ -261,7 +289,10 @@ public class Server extends JFrame
         } // end catch
     } // end method sendData
 
-    // manipulates displayArea in the event-dispatch thread
+    /**
+     *  manipulates displayArea in the event-dispatch thread
+     * @param messageToDisplay
+     */
     private void displayMessage( final String messageToDisplay )
     {
         SwingUtilities.invokeLater(
@@ -276,7 +307,10 @@ public class Server extends JFrame
         ); // end call to SwingUtilities.invokeLater
     } // end method displayMessage
 
-    // manipulates enterField in the event-dispatch thread
+    /**
+     * manipulates enterField in the event-dispatch thread
+     * @param editable
+     */
     private void setTextFieldEditable( final boolean editable )
     {
         SwingUtilities.invokeLater(

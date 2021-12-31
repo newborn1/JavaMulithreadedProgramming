@@ -16,7 +16,7 @@ public class BrowserFrame extends AbstractFrame {
     public BrowserFrame(AbstractUser user){
        super(user);
        addAllComponent();
-        setTitle("欢迎进入档案操作员管理界面");
+       setTitle("欢迎进入档案浏览员管理界面");
     }
 
     @Override

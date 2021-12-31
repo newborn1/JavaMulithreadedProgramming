@@ -24,8 +24,7 @@ public class Operator extends AbstractUser {
 	 */
 	@Override
 	public void showMenu() {
-		JFrame mainFrame = new OperatorFrame(this);
-		mainFrame.setVisible(true);
+		new OperatorFrame(this);
 
 		System.out.print("档案操作员菜单");
 

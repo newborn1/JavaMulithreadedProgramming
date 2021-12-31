@@ -56,7 +56,7 @@ public class MainSurfaceFrame extends JFrame {
             String name = "";
             String password = "";
             AbstractUser u = null;
-            name = userNameTextField.getText() ;
+            name = userNameTextField.getText();
             password = new String(passwordField.getPassword());
 
             u = FileSystem.verifyUser(name,password);
@@ -105,7 +105,6 @@ public class MainSurfaceFrame extends JFrame {
         pack();
 
     }
-
 
     public static void main(String[] args) {
         MainSurfaceFrame surfaceFrame = new MainSurfaceFrame(null);

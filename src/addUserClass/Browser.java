@@ -18,8 +18,7 @@ public class Browser extends AbstractUser {
 	
 	@Override
 	public void showMenu() {
-		JFrame mainFrame = new BrowserFrame(this);
-		mainFrame.setVisible(true);
+		new BrowserFrame(this);
 
 		System.out.print("进入档案浏览员界面");
 
