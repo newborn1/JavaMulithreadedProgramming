@@ -45,16 +45,12 @@ public class Client extends JFrame
         // create enterField
         enterField = new JTextField();
         enterField.setEditable( false );
+        // send message to server
+// end method actionPerformed
         enterField.addActionListener(
-                new ActionListener()
-                {
-                    // send message to server
-                    @Override
-                    public void actionPerformed(ActionEvent event )
-                    {
-                        sendData( event.getActionCommand());
-                        enterField.setText( "" );
-                    } // end method actionPerformed
+                event -> {
+                    sendData( event.getActionCommand());
+                    enterField.setText( "" );
                 } // end anonymous inner class
         ); // end call to addActionListener
 
@@ -160,7 +156,17 @@ public class Client extends JFrame
                         if (!file.createNewFile()) {
                             JOptionPane.showConfirmDialog(null, "该文件已下载到本地，请勿重复下载!", "警告", JOptionPane.OK_CANCEL_OPTION);
                             System.out.println("该文件已下载到本地，请勿重复下载!");
-                            input.readLong();
+                            long fileLength = input.readLong();
+                            byte[] bytes = new byte[1024];
+                            int len = 0;
+                            int sizeLength = 0;
+                            while((len=input.read(bytes,0,bytes.length))>0){
+                                sizeLength+=len;
+                                System.out.write(bytes,0,len);
+                                if(sizeLength==fileLength){
+                                    break;
+                                }
+                            }
                             return;
                         } else {
                             /**

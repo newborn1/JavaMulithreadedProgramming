@@ -188,7 +188,7 @@ public class Server extends JFrame
                         int sizeLength=0;
                         long fileLength= input.readLong();
                         System.out.println(fileLength);
-                        while((len=input.read(bytes,0,bytes.length))>0)
+                        while((len=input.read(bytes))>0)
                         {
                             out.write(bytes,0,len);
                             out.flush();
