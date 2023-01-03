@@ -1,3 +1,5 @@
-#JavaMulithreadedProgramming
+# 武汉理工大学大二下Java多线程编程
 
-This is my first big java multithreaded programming that is asked to finish in eight weeks.To record my programming experiment and improve my skill of using git and github,I decide to do this github programming.What we was asked is that we should complete a manage system basing mulithread by Java.
+这个项目是为了记录我的编程实验并提高使用Git和github的技能。
+
+实验徐娅使用Java完成C/S架构的管理系统基础，所用的数据库为MySQL数据库。
